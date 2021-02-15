@@ -44,7 +44,6 @@ func sendEmbed(discord *discordgo.Session, message MessageStruct) {
     }
 
     discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
-    //discord.WebhookExecute("810674008244092930", "90iO4UnmHQ_W9HFVycr50us1R0JMDd_wmDWqyVXt_d-jpuLK_6WwWOYDar6OLV-ymkIz", true, params)
 }
 
 func queueGroomer() {
