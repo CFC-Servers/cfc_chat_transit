@@ -2,8 +2,7 @@ require "gwsockets"
 require "cfclogger"
 
 import lshift from bit
-
-Logger = CFCLogger "CFC_ChatTransit"
+export ChatTransit = {}
 
 RelayPort = file.Read "cfc/cfc_relay_port.txt", "DATA"
 RelayPort = string.Replace RelayPort, "\r", ""
@@ -17,36 +16,38 @@ Realm = file.Read "cfc/realm.txt", "DATA"
 Realm = string.Replace Realm, "\r", ""
 Realm = string.Replace Realm, "\n", ""
 
-local WebSocket
+ChatTransit.Logger = CFCLogger "CFC_ChatTransit"
+ChatTransit.TeamColorCache = {}
 
 hook.Add "PostEntityInit", "CFC_ChatTransit_WSInit", ->
-    with WebSocket = GWSockets.createWebSocket "ws://127.0.0.1#{RelayPort}"
+    Logger = ChatTransit.Logger
+
+    with ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1#{RelayPort}"
         \setHeader "Authorization", "Bearer #{RelayPassword}"
         \onConnected -> Logger\info "Established websocket connection"
         \onDisconnected -> Logger\warn "Lost websocket connection!"
         \onError (message) -> Logger\error "Websocket Error!", message
         \open!
 
-TeamColorCache = {}
 
-getTeamColorCode = (team) ->
-    return TeamColorCache[team] if TeamColorCache[team]
+ChatTransait.GetTeamColorCode = (team) =>
+    return @TeamColorCache[team] if @TeamColorCache[team]
 
     color = GetColor team
     r, g, b = color\Unpack!
 
     calculated = lshift(r, 16) + lshift(g, 8) + b
-    TeamColorCache[team] = calculated
+    @TeamColorCache[team] = calculated
 
     calculated
 
-receiveMessage = (ply, text, teamChat) ->
+ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     return if teamChat
     return unless text
     return if text == ""
 
     team = ply\Team!
-    rankColor = getTeamColorCode team
+    rankColor = @GetTeamColorCode team
     avatar = ply.response.players[1].avatar
     steamName = ply\Nick!
     steamId = ply\SteamID64!
@@ -63,8 +64,6 @@ receiveMessage = (ply, text, teamChat) ->
 
     message = TableToJSON struct
 
-    WebSocket\write message
+    @WebSocket\write message
 
-hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", receiveMessage, HOOK_MONITOR_LOW
-
-Logger\info "Loaded!"
+hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", ChatTransit\ReceiveMessage, HOOK_MONITOR_LOW
