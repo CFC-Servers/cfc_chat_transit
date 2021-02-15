@@ -47,6 +47,8 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     return unless text
     return if text == ""
 
+    @Logger\debug "Received message for #{ply\Nick!}, '#{text}'"
+
     teamName = ply\Team!
     rankColor = @GetTeamColorCode teamName
     avatar = ply.PlayerSummary.response.players[1].avatar
@@ -66,5 +68,7 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     message = TableToJSON struct
 
     @WebSocket\write message
+
+    @Logger\debug "Sent message '#{text}' to websocket"
 
 hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", ChatTransit\ReceiveMessage, HOOK_MONITOR_LOW
