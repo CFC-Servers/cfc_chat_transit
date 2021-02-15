@@ -20,19 +20,16 @@ Realm = string.Replace Realm, "\n", ""
 
 ChatTransit.Logger = CFCLogger "CFC_ChatTransit"
 ChatTransit.TeamColorCache = {}
+ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1:#{RelayPort}"
 
-hook.Add "PostEntityInit", "CFC_ChatTransit_WSInit", ->
+with ChatTransit.WebSocket
     Logger = ChatTransit.Logger
-    ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1#{RelayPort}"
+    \setHeader "Authorization", "Bearer #{RelayPassword}"
+    \onConnected -> Logger\info "Established websocket connection"
+    \onDisconnected -> Logger\warn "Lost websocket connection!"
+    \onError (message) -> Logger\error "Websocket Error!", message
+    \open!
 
-    with ChatTransit.WebSocket
-        \setHeader "Authorization", "Bearer #{RelayPassword}"
-        \onConnected -> Logger\info "Established websocket connection"
-        \onDisconnected -> Logger\warn "Lost websocket connection!"
-        \onError (message) -> Logger\error "Websocket Error!", message
-        \open!
-
-    nil
 
 ChatTransit.GetTeamColorCode = (teamName) =>
     return @TeamColorCache[teamName] if @TeamColorCache[teamName]
