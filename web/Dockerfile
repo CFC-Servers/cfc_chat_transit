@@ -11,6 +11,7 @@ ARG BRANCH=HEAD
 RUN go mod init cfc_chat_relay\
     && go get github.com/gorilla/websocket@$BRANCH \
     && go get github.com/bwmarrin/discordgo@$BRANCH \
+    && go get github.com/getsentry/sentry-go@$BRANCH \
 	&& go list -m all \
 	&& go fmt \
 	&& CGO_ENABLED=0 GOOS=linux go build -a -o cfc_chat_relay . \
