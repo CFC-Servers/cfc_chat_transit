@@ -1,1 +1,1 @@
-include "cfc_chat_transit/server/init.moon"
+include "cfc_chat_transit/server/init.lua"
