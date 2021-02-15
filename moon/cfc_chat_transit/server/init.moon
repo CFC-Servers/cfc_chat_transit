@@ -25,9 +25,9 @@ ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1:#{RelayPort}/r
 with ChatTransit.WebSocket
     Logger = ChatTransit.Logger
     --\setHeader "Authorization", "Bearer #{RelayPassword}"
-    \onConnected -> Logger\info "Established websocket connection"
-    \onDisconnected -> Logger\warn "Lost websocket connection!"
-    \onError (message) -> Logger\error "Websocket Error!", message
+    .onConnected = => Logger\info "Established websocket connection"
+    .onDisconnected = => Logger\warn "Lost websocket connection!"
+    .onError = (message) => Logger\error "Websocket Error!", message
     \open!
 
 
