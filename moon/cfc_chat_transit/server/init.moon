@@ -23,14 +23,16 @@ ChatTransit.TeamColorCache = {}
 
 hook.Add "PostEntityInit", "CFC_ChatTransit_WSInit", ->
     Logger = ChatTransit.Logger
+    ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1#{RelayPort}"
 
-    with ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1#{RelayPort}"
+    with ChatTransit.WebSocket
         \setHeader "Authorization", "Bearer #{RelayPassword}"
         \onConnected -> Logger\info "Established websocket connection"
         \onDisconnected -> Logger\warn "Lost websocket connection!"
         \onError (message) -> Logger\error "Websocket Error!", message
         \open!
 
+    nil
 
 ChatTransit.GetTeamColorCode = (teamName) =>
     return @TeamColorCache[teamName] if @TeamColorCache[teamName]
