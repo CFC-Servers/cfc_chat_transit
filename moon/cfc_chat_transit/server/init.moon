@@ -18,12 +18,14 @@ Realm = string.Replace Realm, "\r", ""
 Realm = string.Replace Realm, "\n", ""
 
 local WebSocket
-with WebSocket = GWSockets.createWebSocket "ws://127.0.0.1#{RelayPort}"
-    \setHeader "Authorization", "Bearer #{RelayPassword}"
-    \onConnected -> Logger\info "Established websocket connection"
-    \onDisconnected -> Logger\warn "Lost websocket connection!"
-    \onError (message) -> Logger\error "Websocket Error!", message
-    \open!
+
+hook.Add "PostEntityInit", "CFC_ChatTransit_WSInit", ->
+    with WebSocket = GWSockets.createWebSocket "ws://127.0.0.1#{RelayPort}"
+        \setHeader "Authorization", "Bearer #{RelayPassword}"
+        \onConnected -> Logger\info "Established websocket connection"
+        \onDisconnected -> Logger\warn "Lost websocket connection!"
+        \onError (message) -> Logger\error "Websocket Error!", message
+        \open!
 
 TeamColorCache = {}
 
@@ -64,3 +66,5 @@ receiveMessage = (ply, text, teamChat) ->
     WebSocket\write message
 
 hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", receiveMessage, HOOK_MONITOR_LOW
+
+Logger\info "Loaded!"
