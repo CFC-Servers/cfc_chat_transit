@@ -40,7 +40,7 @@ ChatTransit.GetTeamColorCode = (teamName) =>
     calculated = lshift(r, 16) + lshift(g, 8) + b
     @TeamColorCache[teamName] = calculated
 
-    calculated
+    tostring calculated
 
 ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     return if teamChat

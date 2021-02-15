@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/bwmarrin/discordgo"
+	"strconv"
 	"log"
 	"os"
 )
@@ -12,7 +13,7 @@ var discord *discordgo.Session
 type MessageStruct struct {
 	Realm     string
 	Content   string
-	RankColor int
+	RankColor string
 	Avatar    string
 	SteamName string
 	SteamId   string
@@ -26,13 +27,20 @@ var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
 
 func sendEmbed(discord *discordgo.Session, message MessageStruct) {
 
+    color, err := strconv.Atoi(message.RankColor)
+
+    if err != nil {
+        log.Fatal("Couldn't convert given color into an int!", err)
+        return
+    }
+
 	params := &discordgo.WebhookParams{
 		Content: "",
 		Embeds: []*discordgo.MessageEmbed{
 			{
 				Title:       "Said on " + message.Realm,
 				Description: message.Content,
-				Color:       message.RankColor,
+				Color:       color,
 				Author: &discordgo.MessageEmbedAuthor{
 					URL:     "https://steamcommunity.com/profiles/" + message.SteamId,
 					Name:    message.SteamName,
