@@ -30,7 +30,7 @@ hook.Add "PostEntityInit", "CFC_ChatTransit_WSInit", ->
         \open!
 
 
-ChatTransait.GetTeamColorCode = (team) =>
+ChatTransit.GetTeamColorCode = (team) =>
     return @TeamColorCache[team] if @TeamColorCache[team]
 
     color = GetColor team
