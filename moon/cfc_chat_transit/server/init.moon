@@ -20,7 +20,7 @@ Realm = string.Replace Realm, "\n", ""
 
 ChatTransit.Logger = CFCLogger "CFC_ChatTransit"
 ChatTransit.TeamColorCache = {}
-ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1:#{RelayPort}"
+ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1:#{RelayPort}/relay"
 
 with ChatTransit.WebSocket
     Logger = ChatTransit.Logger
