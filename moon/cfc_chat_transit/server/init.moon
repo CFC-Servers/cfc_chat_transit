@@ -3,6 +3,7 @@ require "cfclogger"
 
 import lshift from bit
 import GetColor from team
+import TableToJSON from util
 export ChatTransit = {}
 
 RelayPort = file.Read "cfc/cfc_relay_port.txt", "DATA"
