@@ -2,6 +2,7 @@ require "gwsockets"
 require "cfclogger"
 
 import lshift from bit
+import GetColor from team
 export ChatTransit = {}
 
 RelayPort = file.Read "cfc/cfc_relay_port.txt", "DATA"
@@ -30,14 +31,14 @@ hook.Add "PostEntityInit", "CFC_ChatTransit_WSInit", ->
         \open!
 
 
-ChatTransit.GetTeamColorCode = (team) =>
-    return @TeamColorCache[team] if @TeamColorCache[team]
+ChatTransit.GetTeamColorCode = (teamName) =>
+    return @TeamColorCache[teamName] if @TeamColorCache[teamName]
 
-    color = GetColor team
+    color = GetColor teamName
     r, g, b = color\Unpack!
 
     calculated = lshift(r, 16) + lshift(g, 8) + b
-    @TeamColorCache[team] = calculated
+    @TeamColorCache[teamName] = calculated
 
     calculated
 
@@ -46,8 +47,8 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     return unless text
     return if text == ""
 
-    team = ply\Team!
-    rankColor = @GetTeamColorCode team
+    teamName = ply\Team!
+    rankColor = @GetTeamColorCode teamName
     avatar = ply.response.players[1].avatar
     steamName = ply\Nick!
     steamId = ply\SteamID64!
