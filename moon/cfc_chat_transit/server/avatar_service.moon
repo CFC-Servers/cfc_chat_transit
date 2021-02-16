@@ -16,7 +16,7 @@ class AvatarService
             url: "http://#{AvatarServiceAddress}/outline"
             method: "POST"
             type: "application/json"
-            body: TableToJSON :avatarUrl
+            body: TableToJSON { :avatarUrl, :outlineColor }
 
     setOutlinedAvatar: (ply, avatarUrl) =>
         data = ply.response.players[1]
