@@ -6,6 +6,6 @@ services:
     ports:
       - "$PORT:8080"
     env_file:
-      - ../.env
+      - .env
     volumes:
       - ./:/build/src
