@@ -8,7 +8,7 @@ AvatarServiceAddress = string.Replace AvatarServiceAddress, "\n", ""
 class AvatarService
     new: (@Logger) =>
 
-    sendAvatar: (avatarUrl, success, failed) =>
+    processAvatar: (avatarUrl, outlineColor, success, failed) =>
         HTTP
             :success
             :failed
@@ -25,11 +25,12 @@ class AvatarService
 
     outlineAvatar: (ply, data) =>
         avatar = data.response.players[1].avatarfull
+        outlineColor = ChatTransit\GetTeamColorCode ply\Team!
 
         success = (code, body) -> setOutlinedAvatar ply, response
         failed = (err) -> @Logger\error err
 
-        @sendAvatar avatar, success, failed
+        @processAvatar avatar, success, failed
 
 ChatTransit.AvatarService = AvatarService ChatTransit.Logger
 
