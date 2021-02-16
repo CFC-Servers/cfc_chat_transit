@@ -25,10 +25,14 @@ class AvatarService
         data.avatarfull = avatarUrl
 
     outlineAvatar: (ply, data) =>
+        @Logger\debug "Received request to outline avatar for ply: #{ply\Nick!}"
         avatar = data.response.players[1].avatarfull
         outlineColor = ChatTransit\GetTeamColorCode ply\Team!
 
-        success = (code, body) -> @setOutlinedAvatar ply, response
+        success = (code, body) ->
+            @Logger\debug "Avatar request succeeded with code: #{code} | Body: #{body}"
+            @setOutlinedAvatar ply, body
+
         failed = (err) -> @Logger\error err
 
         @processAvatar avatar, success, failed
