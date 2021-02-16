@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 transparent = (0, 0, 0, 0)
 
-base_url = avatarservice.cfcservers.org
+base_url = "https://avatarservice.cfcservers.org"
 
 @app.route("/outline", methods=["POST"])
 def outline():
@@ -21,7 +21,7 @@ def outline():
     avatar_path = f"/avatars/{image_name}.png"
 
     if os.path.isfile(avatar_path):
-        return send_file(avatar_path, mimetype="image/png")
+        return f"{base_url}{avatar_path}"
 
     outline_color = content["outlineColor"] # "255 255 255 255"
     outline_color = outline_color.split(" ") # ["255", "255", "255", "255"]
@@ -38,4 +38,4 @@ def outline():
 
     avatar.save(avatar_path, "PNG")
 
-    return send_file(avatar_path, mimetype="image/png")
+    return f"{base_url}{avatar_path}"
