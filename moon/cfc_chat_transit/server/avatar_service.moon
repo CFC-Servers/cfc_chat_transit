@@ -8,15 +8,20 @@ AvatarServiceAddress = string.Replace AvatarServiceAddress, "\n", ""
 class AvatarService
     new: (logger) =>
         @Logger = logger
+        @outlinerUrl = "http://#{AvatarServiceAddress}/outline"
 
     processAvatar: (avatarUrl, outlineColor, success, failed) =>
+        body = TableToJSON { :avatarUrl, :outlineColor }
+
+        @Logger\debug "Sending data to outliner: ", body
+
         HTTP
             :success
             :failed
-            url: "http://#{AvatarServiceAddress}/outline"
+            :body
+            url: @outlinerUrl
             method: "POST"
             type: "application/json"
-            body: TableToJSON { :avatarUrl, :outlineColor }
 
     setOutlinedAvatar: (ply, avatarUrl) =>
         data = ply.response.players[1]
