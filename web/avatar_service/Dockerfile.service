@@ -1,5 +1,6 @@
 FROM python:3.9.0
 
+RUN mkdir /avatars
 RUN mkdir /avatar-service
 WORKDIR /avatar-service
 COPY . /avatar-service
