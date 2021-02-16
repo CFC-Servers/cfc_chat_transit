@@ -37,7 +37,7 @@ func sendMessage(discord *discordgo.Session, message MessageStruct) {
 	var contentBuilder strings.Builder
 	contentBuilder.WriteString(fmt.Sprintf("[%v](%v)", JOIN_EMOJI, joinUrl))
 	contentBuilder.WriteString(fmt.Sprintf("[%v](%v)", STEAM_EMOJI, profileUrl))
-	contentBuilder.WriteString(" - ")
+    contentBuilder.WriteString(": ")
 	contentBuilder.WriteString(message.Content)
 
 	params := &discordgo.WebhookParams{
