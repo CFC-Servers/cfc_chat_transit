@@ -1,12 +1,13 @@
 import TableToJSON from util
 HTTP = HTTP
 
-AvatarServiceAddress = file.Read "cfc/cfc_avatar_service_address.txt", "DATA"
+AvatarServiceAddress = file.Read "cfc/avatar_service_address.txt", "DATA"
 AvatarServiceAddress = string.Replace AvatarServiceAddress, "\r", ""
 AvatarServiceAddress = string.Replace AvatarServiceAddress, "\n", ""
 
 class AvatarService
-    new: (@Logger) =>
+    new: (logger) =>
+        @Logger = logger
 
     processAvatar: (avatarUrl, outlineColor, success, failed) =>
         HTTP
