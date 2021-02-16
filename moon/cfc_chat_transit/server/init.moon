@@ -2,7 +2,6 @@ require "gwsockets"
 require "cfclogger"
 
 import lshift from bit
-import time from os
 import GetColor from team
 import TableToJSON from util
 export ChatTransit = {}
@@ -57,7 +56,6 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     steamName = ply\Nick!
     steamId = ply\SteamID64!
     irisId = "none"
-    sentAt = time!
 
     struct =
         Realm: Realm
@@ -67,7 +65,6 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
         SteamName: steamName
         SteamId: steamId
         IrisId: irisId
-        SentAt: sentAt
 
     message = TableToJSON struct
 

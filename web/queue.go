@@ -15,7 +15,6 @@ type MessageStruct struct {
 	Realm     string
 	Content   string
 	RankColor float64
-	SentAt    float64
 	Avatar    string
 	SteamName string
 	SteamId   string
@@ -32,15 +31,15 @@ const (
 	STEAM_EMOJI = "<:steam:675847621054824455>"
 )
 
-func sendEmbed(discord *discordgo.Session, message MessageStruct) {
+func sendMessage(discord *discordgo.Session, message MessageStruct) {
 	profileUrl := "https://steamcommunity.com/profiles/" + message.SteamId
 	joinUrl := "https://cfcservers.org/" + strings.ToLower(message.Realm) + "/join"
 
 	var contentBuilder strings.Builder
+	contentBuilder.WriteString(message.Content)
+	contentBuilder.WriteByte('\n')
 	contentBuilder.WriteString(fmt.Sprintf("[%v](%v)", JOIN_EMOJI, joinUrl))
 	contentBuilder.WriteString(fmt.Sprintf("[%v](%v)", STEAM_EMOJI, profileUrl))
-	contentBuilder.WriteByte('\n')
-	contentBuilder.WriteString(message.Content)
 
 	params := &discordgo.WebhookParams{
 		Content:   contentBuilder.String(),
@@ -75,6 +74,6 @@ func queueGroomer() {
 
 		log.Print(message.SteamName, message.SteamId, message.Content)
 
-		sendEmbed(discord, message)
+		sendMessage(discord, message)
 	}
 }
