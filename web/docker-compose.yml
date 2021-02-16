@@ -2,6 +2,7 @@ version: "3.8"
 services:
   web:
     build: .
+    container_name: "${REALM}_chat_transit_web"
     ports:
       - "$PORT:8080"
     env_file:
