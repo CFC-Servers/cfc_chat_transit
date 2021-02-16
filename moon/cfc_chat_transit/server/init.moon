@@ -2,10 +2,12 @@ require "gwsockets"
 require "cfclogger"
 
 import lshift from bit
+import time from os
 import GetColor from team
 import TableToJSON from util
 export ChatTransit = {}
 
+-- TODO: Relocate/clean these
 RelayPort = file.Read "cfc/cfc_relay_port.txt", "DATA"
 RelayPort = string.Replace RelayPort, "\r", ""
 RelayPort = string.Replace RelayPort, "\n", ""
@@ -30,7 +32,6 @@ with ChatTransit.WebSocket
     .onError = (message) => Logger\error "Websocket Error!", message
     \open!
 
-
 ChatTransit.GetTeamColorCode = (teamName) =>
     return @TeamColorCache[teamName] if @TeamColorCache[teamName]
 
@@ -38,7 +39,6 @@ ChatTransit.GetTeamColorCode = (teamName) =>
     r, g, b = color\Unpack!
 
     calculated = lshift(r, 16) + lshift(g, 8) + b
-    calculated = tostring calculated
 
     @TeamColorCache[teamName] = calculated
 
@@ -57,6 +57,7 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     steamName = ply\Nick!
     steamId = ply\SteamID64!
     irisId = "none"
+    sentAt = time!
 
     struct =
         Realm: Realm
@@ -66,6 +67,7 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
         SteamName: steamName
         SteamId: steamId
         IrisId: irisId
+        SentAt: sentAt
 
     message = TableToJSON struct
 
