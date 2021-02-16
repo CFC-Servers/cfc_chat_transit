@@ -52,7 +52,7 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
 
     teamName = ply\Team!
     rankColor = @GetTeamColorCode teamName
-    avatar = ply.PlayerSummary.response.players[1].avatar
+    avatar = ply.PlayerSummary.response.players[1].avatarfull
     steamName = ply\Nick!
     steamId = ply\SteamID64!
     irisId = "none"

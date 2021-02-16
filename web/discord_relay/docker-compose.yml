@@ -2,10 +2,10 @@ version: "3.8"
 services:
   web:
     build: .
-    container_name: "${REALM}_chat_transit_web"
+    container_name: "${REALM}_chat_transit_discord_relay"
     ports:
       - "$PORT:8080"
     env_file:
-      - .env
+      - ../.env
     volumes:
       - ./:/build/src

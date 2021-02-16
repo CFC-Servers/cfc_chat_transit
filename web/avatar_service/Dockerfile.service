@@ -1,0 +1,12 @@
+FROM python:3.9.0
+
+RUN mkdir /avatar-service
+WORKDIR /avatar-service
+COPY . /avatar-service
+
+RUN pip install -U --upgrade pip
+RUN pip install --upgrade -r ./requirements.txt
+
+COPY entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
