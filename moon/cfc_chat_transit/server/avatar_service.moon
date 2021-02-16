@@ -28,7 +28,7 @@ class AvatarService
         avatar = data.response.players[1].avatarfull
         outlineColor = ChatTransit\GetTeamColorCode ply\Team!
 
-        success = (code, body) -> setOutlinedAvatar ply, response
+        success = (code, body) -> @setOutlinedAvatar ply, response
         failed = (err) -> @Logger\error err
 
         @processAvatar avatar, success, failed
