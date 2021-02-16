@@ -14,7 +14,6 @@ var discord *discordgo.Session
 type MessageStruct struct {
 	Realm     string
 	Content   string
-	RankColor float64
 	Avatar    string
 	SteamName string
 	SteamId   string

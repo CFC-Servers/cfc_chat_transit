@@ -31,17 +31,14 @@ with ChatTransit.WebSocket
     .onError = (message) => Logger\error "Websocket Error!", message
     \open!
 
-ChatTransit.GetTeamColorCode = (teamName) =>
+ChatTransit.GetTeamColor = (teamName) =>
     return @TeamColorCache[teamName] if @TeamColorCache[teamName]
 
-    color = GetColor teamName
-    r, g, b = color\Unpack!
+    teamColor = tostring GetColor teamName
 
-    calculated = lshift(r, 16) + lshift(g, 8) + b
+    @TeamColorCache[teamName] = teamColor
 
-    @TeamColorCache[teamName] = calculated
-
-    calculated
+    teamColor
 
 ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     return if teamChat
@@ -51,7 +48,6 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     @Logger\debug "Received message for #{ply\Nick!}, '#{text}'"
 
     teamName = ply\Team!
-    rankColor = @GetTeamColorCode teamName
     avatar = ply.PlayerSummary.response.players[1].avatarfull
     steamName = ply\Nick!
     steamId = ply\SteamID64!
@@ -60,7 +56,6 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     struct =
         Realm: Realm
         Content: text
-        RankColor: rankColor
         Avatar: avatar
         SteamName: steamName
         SteamId: steamId
