@@ -40,7 +40,7 @@ class AvatarService
 
         failed = (err) -> @Logger\error err
 
-        @processAvatar avatar, success, failed
+        @processAvatar avatar, outlineColor, success, failed
 
 ChatTransit.AvatarService = AvatarService ChatTransit.Logger
 
