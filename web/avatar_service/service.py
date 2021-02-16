@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw
 from flask import Flask, request, send_file
-import os.path
+import os
 
 import requests
 
@@ -21,7 +21,7 @@ def outline():
     avatar_path = f"/avatars/{image_name}.png"
 
     if os.path.isfile(avatar_path):
-        return f"{base_url}{avatar_path}"
+        os.remove(avatar_path)
 
     outline_color = content["outlineColor"] # "255 255 255 255"
     outline_color = outline_color.split(" ") # ["255", "255", "255", "255"]
