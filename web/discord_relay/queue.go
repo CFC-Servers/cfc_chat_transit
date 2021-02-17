@@ -26,7 +26,7 @@ var WebhookId string = os.Getenv("WEBHOOK_ID")
 var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
 
 const (
-	JOIN_EMOJI = "<:buildkill:696093267518947368>"
+	JOIN_EMOJI  = "<:buildkill:696093267518947368>"
 	STEAM_EMOJI = "<:steam:675847621054824455>"
 )
 
@@ -37,12 +37,15 @@ func sendMessage(discord *discordgo.Session, message MessageStruct) {
 	var contentBuilder strings.Builder
 	contentBuilder.WriteString(fmt.Sprintf("[%v](%v)", JOIN_EMOJI, joinUrl))
 	contentBuilder.WriteString(fmt.Sprintf("[%v](%v)", STEAM_EMOJI, profileUrl))
-    contentBuilder.WriteString(": ")
+	contentBuilder.WriteString(": ")
 	contentBuilder.WriteString(message.Content)
 
 	params := &discordgo.WebhookParams{
+		AllowedMentions: &discordgo.MessageAllowedMentions{
+			Parse: []discordgo.AllowedMentionType{},
+		},
 		Content:   contentBuilder.String(),
-		Username: message.SteamName,
+		Username:  message.SteamName,
 		AvatarURL: message.Avatar,
 	}
 
