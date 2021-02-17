@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 transparent = (0, 0, 0, 0)
 
-base_url = "https://avatarservice.cfcservers.org"
+base_url = os.getenv("AVATAR_SERVICE_URL")
 
 @app.route("/outline", methods=["POST"])
 def outline():
