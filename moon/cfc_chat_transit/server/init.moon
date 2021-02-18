@@ -2,22 +2,19 @@ require "gwsockets"
 require "cfclogger"
 
 import lshift from bit
+import Read from file
 import GetColor from team
 import TableToJSON from util
+import Create, Exists, Remove, RepsLeft from timer
 export ChatTransit = {}
 
--- TODO: Relocate/clean these
-RelayPort = file.Read "cfc/cfc_relay_port.txt", "DATA"
-RelayPort = string.Replace RelayPort, "\r", ""
-RelayPort = string.Replace RelayPort, "\n", ""
+readClean = (fileName) ->
+    data = Read fileName, "DATA"
+    gsub data, "%s", ""
 
-RelayPassword = file.Read "cfc/cfc_relay_password.txt", "DATA"
-RelayPassword = string.Replace RelayPassword, "\r", ""
-RelayPassword = string.Replace RelayPassword, "\n", ""
-
-Realm = file.Read "cfc/realm.txt", "DATA"
-Realm = string.Replace Realm, "\r", ""
-Realm = string.Replace Realm, "\n", ""
+RelayPort = readClean "cfc/cfc_relay_port.txt"
+RelayPassword = readClean "cfc/cfc_relay_password.txt"
+Realm = readClean "cfc/realm.txt"
 
 ChatTransit.Logger = CFCLogger "CFC_ChatTransit"
 ChatTransit.TeamColorCache = {}
@@ -25,10 +22,22 @@ ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1:#{RelayPort}/r
 
 with ChatTransit.WebSocket
     Logger = ChatTransit.Logger
-    --\setHeader "Authorization", "Bearer #{RelayPassword}"
-    .onConnected = => Logger\info "Established websocket connection"
-    .onDisconnected = => Logger\warn "Lost websocket connection!"
+    .reconnectTimerName = "CFC_ChatTransit_WebsocketReconnect"
+
+    .onConnected = =>
+        Logger\info "Established websocket connection"
+        Remove .reconnectTimerName
+
+    .onDisconnected = =>
+        Logger\warn "Lost websocket connection!"
+
+        if Exists .reconnectTimerName
+            return Logger\warn "Will retry #{RepsLeft .reconnectTimerName} more times"
+
+        Create .reconnectTimerName, 2, 30, -> \open!
+
     .onError = (message) => Logger\error "Websocket Error!", message
+
     \open!
 
 ChatTransit.GetTeamColor = (teamName) =>
