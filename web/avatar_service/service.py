@@ -33,7 +33,7 @@ def outline():
     x, y =  avatar.size
     bbox = (0, 0, x, y)
     draw = ImageDraw.Draw(avatar, "RGBA")
-    draw.ellipse(bbox, fill=transparent, outline=outline_color, width=10)
+    draw.ellipse(bbox, fill=transparent, outline=outline_color, width=12)
     del draw
 
     avatar.save(avatar_path, "PNG")
