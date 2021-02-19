@@ -35,8 +35,8 @@ func sendMessage(discord *discordgo.Session, message MessageStruct) {
 	joinUrl := "https://cfcservers.org/" + strings.ToLower(message.Realm) + "/join"
 
 	var contentBuilder strings.Builder
-	contentBuilder.WriteString(fmt.Sprintf("[%v](%v) ", JOIN_EMOJI, joinUrl))
-	contentBuilder.WriteString(fmt.Sprintf("[%v](%v) ", STEAM_EMOJI, profileUrl))
+	contentBuilder.WriteString(fmt.Sprintf("[%v](<%v>) ", JOIN_EMOJI, joinUrl))
+	contentBuilder.WriteString(fmt.Sprintf("[%v](<%v>) ", STEAM_EMOJI, profileUrl))
 	contentBuilder.WriteString(message.Content)
 
 	params := &discordgo.WebhookParams{
