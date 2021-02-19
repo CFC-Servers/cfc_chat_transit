@@ -26,8 +26,8 @@ var WebhookId string = os.Getenv("WEBHOOK_ID")
 var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
 
 const (
-	JOIN_EMOJI = "<:buildkill:696093267518947368>"
-	STEAM_EMOJI = "<:steamcircle:811852287701680129>"
+	JOIN_EMOJI = "<:bk:812130062379515906>"
+	STEAM_EMOJI = "<:steamsquare:812130007701782588>"
 )
 
 func sendMessage(discord *discordgo.Session, message MessageStruct) {
@@ -35,9 +35,8 @@ func sendMessage(discord *discordgo.Session, message MessageStruct) {
 	joinUrl := "https://cfcservers.org/" + strings.ToLower(message.Realm) + "/join"
 
 	var contentBuilder strings.Builder
-	contentBuilder.WriteString(fmt.Sprintf("[%v](%v)", JOIN_EMOJI, joinUrl))
-	contentBuilder.WriteString(fmt.Sprintf("[%v](%v)", STEAM_EMOJI, profileUrl))
-	contentBuilder.WriteString("  ")
+	contentBuilder.WriteString(fmt.Sprintf("[%v](%v) ", JOIN_EMOJI, joinUrl))
+	contentBuilder.WriteString(fmt.Sprintf("[%v](%v) ", STEAM_EMOJI, profileUrl))
 	contentBuilder.WriteString(message.Content)
 
 	params := &discordgo.WebhookParams{
