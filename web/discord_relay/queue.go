@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"os"
