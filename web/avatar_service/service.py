@@ -28,7 +28,7 @@ def outline():
     outline_color = [int(c) for c in outline_color] # [255, 255, 255, 255]
     outline_color = tuple(outline_color) # (255, 255, 255, 255)
 
-    avatar = Image.open(requests.get(image_url, stream=True).raw)
+    avatar = Image.open(requests.get(image_url, stream=True).raw).convert("RGB")
 
     x, y =  avatar.size
     bbox = (0, 0, x, y)
