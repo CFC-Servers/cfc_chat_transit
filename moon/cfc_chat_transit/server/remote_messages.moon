@@ -1,11 +1,10 @@
-import AddNetworkString, Decompress from util
+import AddNetworkString from util
 import Start, Receive, ReadBool, WriteString, Send from net
 
 AddNetworkString "CFC_ChatTransit_RemoteMessagePreference"
 AddNetworkString "CFC_ChatTransit_RemoteMessageReceive"
 
 IsValid = IsValid
-
 recipients = RecipientFilter!
 
 Receive "CFC_ChatTransit_RemoteMessagePreference", (_, ply) ->
@@ -23,8 +22,6 @@ broadcastMessage = (ply, cmd, args, argStr) ->
 
     return unless author
     return unless message
-
-    message = Decompress(argStr) or message
 
     Start "CFC_ChatTransit_RemoteMessageReceive"
     WriteString author
