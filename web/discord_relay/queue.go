@@ -30,8 +30,8 @@ const (
 )
 
 func sendMessage(discord *discordgo.Session, message MessageStruct) {
-	profileUrl := "https://steamcommunity.com/profiles/" + message.SteamId
-	joinUrl := "https://cfcservers.org/" + strings.ToLower(message.Realm) + "/join"
+	//profileUrl := "https://steamcommunity.com/profiles/" + message.SteamId
+	//joinUrl := "https://cfcservers.org/" + strings.ToLower(message.Realm) + "/join"
 
 	var contentBuilder strings.Builder
 	//contentBuilder.WriteString(fmt.Sprintf("[%v](<%v>) ", JOIN_EMOJI, joinUrl))
