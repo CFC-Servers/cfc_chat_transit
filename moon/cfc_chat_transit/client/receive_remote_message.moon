@@ -1,28 +1,29 @@
-import Start, Receive, ReadBool, ReadString, WriteBool, Send from net
+import Start, Receive, ReadBool, ReadColor, ReadString, WriteBool, Send from net
 import AddToolCategory, AddToolMenuOption from spawnmenu
 
 shouldReceiveRemoteMessages = CreateConVar "cfc_chat_transit_remote_messages", true, FCVAR_ARCHIVE, "Should receive remote messges in chat", 0, 1
 
 colors =
     white: Color 255, 255, 255
-    blurple: Color 114, 137, 218
+    blurple: Color 142, 163, 247
 
 Receive "CFC_ChatTransit_RemoteMessageReceive", ->
     return unless shouldReceiveRemoteMessages\GetBool!
 
     author = ReadString!
+    authorColor = ReadColor!
     message = ReadString!
 
     return unless author
+    return unless authorColor
     return unless message
 
-    -- "@#{author}: #{message}"
-    chat.AddText
-        colors.blurple
-        "@#{author}"
-
-        colors.white
-        ": #{message}"
+    -- [Discord] Phatso#2327: Henlop
+    chat.AddText(
+        colors.blurple, "[Discord] "
+        authorColor, "@#{author}"
+        colors.white ": #{message}"
+    )
 
 alertPreference = (val) ->
     Start "CFC_ChatTransit_RemoteMessagePreference"
