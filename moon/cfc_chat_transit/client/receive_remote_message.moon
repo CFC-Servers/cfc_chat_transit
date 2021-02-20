@@ -41,9 +41,9 @@ populatePanel = (panel) ->
         .OnChange = (_, val) -> alertPreference val
 
 hook.Add "AddToolMenuCategories", "CFC_ChatTransit_MenuCategory",  ->
-    AddToolCategory "Options", "ChatTransit", "Chat Transit"
+    AddToolCategory "Options", "CFC", "CFC"
 
 hook.Add "PopulateToolMenu", "CFC_ChatTransit_MenuOption", ->
-    AddToolMenuOption "Options", "ChatTransit", "should_receive_remote_messages", "Remote Messages", "", "", (panel) ->
+    AddToolMenuOption "Options", "CFC", "should_receive_remote_messages", "Remote Messages", "", "", (panel) ->
         populatePanel panel
 
