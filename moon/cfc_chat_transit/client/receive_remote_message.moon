@@ -1,7 +1,7 @@
 import Start, Receive, ReadBool, ReadColor, ReadString, WriteBool, Send from net
 import AddToolCategory, AddToolMenuOption from spawnmenu
 
-shouldReceiveRemoteMessages = CreateConVar "cfc_chat_transit_remote_messages", true, FCVAR_ARCHIVE, "Should receive remote messges in chat", 0, 1
+shouldReceiveRemoteMessages = CreateConVar "cfc_chat_transit_remote_messages", 1, FCVAR_ARCHIVE, "Should receive remote messges in chat", 0, 1
 
 colors =
     white: Color 255, 255, 255
