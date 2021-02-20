@@ -19,11 +19,15 @@ Receive "CFC_ChatTransit_RemoteMessageReceive", ->
     return unless message
 
     -- [Discord] @Phatso#2327: Henlop
-    chat.AddText(
+    addTextParams = {
         colors.blurple, "[Discord] "
         authorColor, author
         colors.white, ": #{message}"
-    )
+    }
+
+    hook.Run "CFC_ChatTransit_RemoteMessageReceive", addTextParams
+
+    chat.AddText unpack args
 
 alertPreference = (val) ->
     Start "CFC_ChatTransit_RemoteMessagePreference"
