@@ -1,4 +1,4 @@
-import Start, Receive, ReadBool, ReadColor, ReadString, WriteBool, Send from net
+import Start, Receive, ReadBool, ReadColor, ReadString, WriteBool, SendToServer from net
 import AddToolCategory, AddToolMenuOption from spawnmenu
 
 shouldReceiveRemoteMessages = CreateConVar "cfc_chat_transit_remote_messages", 1, FCVAR_ARCHIVE, "Should receive remote messges in chat", 0, 1
@@ -28,7 +28,7 @@ Receive "CFC_ChatTransit_RemoteMessageReceive", ->
 alertPreference = (val) ->
     Start "CFC_ChatTransit_RemoteMessagePreference"
     WriteBool val
-    Send!
+    SendToServer!
 
 hook.Add "InitPostEntity", "CFC_ChatTransit_AlertRemoteMessagePreference", ->
     alertPreference shouldReceiveRemoteMessages\GetBool!
