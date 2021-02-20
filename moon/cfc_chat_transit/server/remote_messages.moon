@@ -1,5 +1,6 @@
 import AddNetworkString from util
 import Start, Receive, ReadBool, WriteString, Send from net
+import ToColor from string
 
 AddNetworkString "CFC_ChatTransit_RemoteMessagePreference"
 AddNetworkString "CFC_ChatTransit_RemoteMessageReceive"
@@ -18,13 +19,18 @@ broadcastMessage = (ply, cmd, args, argStr) ->
     return if IsValid ply
 
     author = rawget args, 1
-    message = rawget args, 2
+    authorColor = rawget args, 2
+    message = rawget args, 3
 
     return unless author
+    return unless authorColor
     return unless message
+
+    authorColor = ToColor authorColor
 
     Start "CFC_ChatTransit_RemoteMessageReceive"
     WriteString author
+    WriteColor authorColor
     WriteString message
     Send recipients
 
