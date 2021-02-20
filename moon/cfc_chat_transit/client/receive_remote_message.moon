@@ -35,7 +35,8 @@ hook.Add "InitPostEntity", "CFC_ChatTransit_AlertRemoteMessagePreference", ->
     alertPreference shouldReceiveRemoteMessages\GetBool!
 
 populatePanel = (panel) ->
-    label = "Should show remote messages (i.e. from Discord)"
+    --label = "Should show remote messages (i.e. from Discord)"
+    label = "Should show remote messages"
 
     with panel\CheckBox label, "cfc_chat_transit_remote_messages"
         .OnChange = (_, val) -> alertPreference val
