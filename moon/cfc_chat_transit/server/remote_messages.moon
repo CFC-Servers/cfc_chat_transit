@@ -6,16 +6,27 @@ AddNetworkString "CFC_ChatTransit_RemoteMessagePreference"
 AddNetworkString "CFC_ChatTransit_RemoteMessageReceive"
 
 IsValid = IsValid
+
 recipients = RecipientFilter!
+adminRecipients = RecipientFilter!
 
-shouldTransmit = CreateConVar "cfc_chat_transit_should_transmit_remote", 0, FCVAR_ARCHIVE, "Should transmit remote messages", 0, 1
+shouldTransmit = CreateConVar "cfc_chat_transit_should_transmit_remote", 1, FCVAR_ARCHIVE, "Should transmit remote messages", 0, 1
+adminOnly = CreateConVar "cfc_chat_transit_transmit_admin_only", 1, FCVAR_ARCHIVE, "Should only transmit to Admins?", 0, 1
 
+-- TODO: Handle rank changes (to/from Admin)
 Receive "CFC_ChatTransit_RemoteMessagePreference", (_, ply) ->
     shouldReceive = ReadBool!
 
-    modify = shouldReceive and recipients.AddPlayer or recipients.RemovePlayer
+    if shouldReceive
+        recipients\AddPlayer ply
 
-    modify recipients, ply
+        if adminOnly\GetBool! and ply\IsAdmin!
+            adminRecipients\AddPlayer ply
+
+        return
+
+    recipients\RemovePlayer ply
+    adminRecipients\RemovePlayer ply
 
 broadcastMessage = (ply, cmd, args, argStr) ->
     return unless shouldTransmit\GetBool!
@@ -31,11 +42,12 @@ broadcastMessage = (ply, cmd, args, argStr) ->
     return unless message
 
     authorColor = ToColor authorColor
+    sendingTo = adminOnly\GetBool! and adminRecipients or recipients
 
     Start "CFC_ChatTransit_RemoteMessageReceive"
     WriteString author
     WriteColor authorColor
     WriteString message
-    Send recipients
+    Send sendingTo
 
 concommand.Add "chat_transit", broadcastMessage
