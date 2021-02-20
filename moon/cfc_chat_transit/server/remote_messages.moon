@@ -8,6 +8,8 @@ AddNetworkString "CFC_ChatTransit_RemoteMessageReceive"
 IsValid = IsValid
 recipients = RecipientFilter!
 
+shouldTransmit = CreateConVar "cfc_chat_transit_should_transmit_remote", 0, FCVAR_ARCHIVE, "Should transmit remote messages", 0, 1
+
 Receive "CFC_ChatTransit_RemoteMessagePreference", (_, ply) ->
     shouldReceive = ReadBool!
 
@@ -16,6 +18,8 @@ Receive "CFC_ChatTransit_RemoteMessagePreference", (_, ply) ->
     modify recipients, ply
 
 broadcastMessage = (ply, cmd, args, argStr) ->
+    return unless shouldTransmit\GetBool!
+
     return if IsValid ply
 
     author = rawget args, 1
