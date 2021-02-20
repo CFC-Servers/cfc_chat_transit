@@ -1,5 +1,5 @@
 import AddNetworkString from util
-import Start, Receive, ReadBool, WriteString, Send from net
+import Start, Receive, ReadBool, WriteColor, WriteString, Send from net
 import ToColor from string
 
 AddNetworkString "CFC_ChatTransit_RemoteMessagePreference"
