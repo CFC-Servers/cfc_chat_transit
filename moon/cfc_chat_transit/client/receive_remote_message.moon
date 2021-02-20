@@ -27,7 +27,7 @@ Receive "CFC_ChatTransit_RemoteMessageReceive", ->
 
     hook.Run "CFC_ChatTransit_RemoteMessageReceive", addTextParams
 
-    chat.AddText unpack args
+    chat.AddText unpack addTextParams
 
 alertPreference = (val) ->
     Start "CFC_ChatTransit_RemoteMessagePreference"
@@ -51,4 +51,3 @@ hook.Add "AddToolMenuCategories", "CFC_ChatTransit_MenuCategory",  ->
 hook.Add "PopulateToolMenu", "CFC_ChatTransit_MenuOption", ->
     AddToolMenuOption "Options", "CFC", "should_receive_remote_messages", "Remote Messages", "", "", (panel) ->
         populatePanel panel
-
