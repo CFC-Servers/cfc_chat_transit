@@ -18,10 +18,10 @@ Receive "CFC_ChatTransit_RemoteMessageReceive", ->
     return unless authorColor
     return unless message
 
-    -- [Discord] Phatso#2327: Henlop
+    -- [Discord] @Phatso#2327: Henlop
     chat.AddText(
         colors.blurple, "[Discord] "
-        authorColor, "@#{author}"
+        authorColor, author
         colors.white, ": #{message}"
     )
 
@@ -31,6 +31,7 @@ alertPreference = (val) ->
     SendToServer!
 
 hook.Add "InitPostEntity", "CFC_ChatTransit_AlertRemoteMessagePreference", ->
+    -- TODO: Why isn't this doing the trick
     alertPreference shouldReceiveRemoteMessages\GetBool!
 
 populatePanel = (panel) ->
