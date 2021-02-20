@@ -22,7 +22,7 @@ Receive "CFC_ChatTransit_RemoteMessageReceive", ->
     chat.AddText(
         colors.blurple, "[Discord] "
         authorColor, "@#{author}"
-        colors.white ": #{message}"
+        colors.white, ": #{message}"
     )
 
 alertPreference = (val) ->
