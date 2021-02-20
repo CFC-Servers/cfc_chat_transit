@@ -34,9 +34,13 @@ alertPreference = (val) ->
     WriteBool val
     SendToServer!
 
-hook.Add "InitPostEntity", "CFC_ChatTransit_AlertRemoteMessagePreference", ->
-    -- TODO: Why isn't this doing the trick
+initHookName = "CFC_ChatTransit_AlertRemoteMessagePreference"
+
+hook.Add "Think", initHookName, ->
+    hook.Remove "Think", initHookName
     alertPreference shouldReceiveRemoteMessages\GetBool!
+
+    return nil
 
 populatePanel = (panel) ->
     --label = "Should show remote messages (i.e. from Discord)"
