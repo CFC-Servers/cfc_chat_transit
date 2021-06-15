@@ -10,13 +10,13 @@ import (
 var discord *discordgo.Session
 
 type MessageStruct struct {
-	Type 	  string
+	Type string
 	Data MessageData
 }
 
 type MessageData struct {
 	Realm     string
-	Type 	  string
+	Type      string
 	Content   string
 	Avatar    string
 	SteamName string
@@ -30,7 +30,7 @@ var WebhookId string = os.Getenv("WEBHOOK_ID")
 var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
 
 const (
-	JOIN_EMOJI = "<:bk:812130062379515906>"
+	JOIN_EMOJI  = "<:bk:812130062379515906>"
 	STEAM_EMOJI = "<:steamsquare:812130007701782588>"
 )
 
@@ -57,8 +57,8 @@ func sendConnectMessage(discord *discordgo.Session, message MessageStruct) {
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
 		},
-		Content:   message.Data.SteamName + " | " + message.Data.SteamId + " has connected to the server." ,
-		Username:  "Relay",
+		Content:  message.Data.SteamName + " | " + message.Data.SteamId + " has connected to the server.",
+		Username: "Relay",
 	}
 
 	discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
@@ -69,8 +69,8 @@ func sendDisconnectMessage(discord *discordgo.Session, message MessageStruct) {
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
 		},
-		Content:   message.Data.SteamName + " | " + message.Data.SteamId + " has disconnected from the server." ,
-		Username:  "Relay",
+		Content:  message.Data.SteamName + " | " + message.Data.SteamId + " has disconnected from the server.",
+		Username: "Relay",
 	}
 
 	discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
@@ -100,7 +100,7 @@ func queueGroomer() {
 
 		log.Println(message.Type, message.Data.SteamName, message.Data.SteamId, message.Data.Content)
 
-		switch message.Type{
+		switch message.Type {
 		case "message":
 			sendMessage(discord, message)
 		case "connect":
