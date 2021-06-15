@@ -10,6 +10,11 @@ import (
 var discord *discordgo.Session
 
 type MessageStruct struct {
+	Type 	  string
+	Data MessageData
+}
+
+type MessageData struct {
 	Realm     string
 	Type 	  string
 	Content   string
@@ -39,9 +44,9 @@ func sendMessage(discord *discordgo.Session, message MessageStruct) {
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
 		},
-		Content:   message.Content,
-		Username:  message.SteamName,
-		AvatarURL: message.Avatar,
+		Content:   message.Data.Content,
+		Username:  message.Data.SteamName,
+		AvatarURL: message.Data.Avatar,
 	}
 
 	discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
@@ -52,7 +57,7 @@ func sendConnectMessage(discord *discordgo.Session, message MessageStruct) {
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
 		},
-		Content:   message.SteamName + " | " + message.SteamId + " has connected to the server." ,
+		Content:   message.Data.SteamName + " | " + message.Data.SteamId + " has connected to the server." ,
 		Username:  "Relay",
 	}
 
@@ -64,7 +69,7 @@ func sendDisconnectMessage(discord *discordgo.Session, message MessageStruct) {
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
 		},
-		Content:   message.SteamName + " | " + message.SteamId + " has disconnected from the server." ,
+		Content:   message.Data.SteamName + " | " + message.Data.SteamId + " has disconnected from the server." ,
 		Username:  "Relay",
 	}
 
@@ -93,7 +98,7 @@ func queueGroomer() {
 			return
 		}
 
-		log.Println(message.Type, message.SteamName, message.SteamId, message.Content)
+		log.Println(message.Type, message.Data.SteamName, message.Data.SteamId, message.Data.Content)
 
 		switch message.Type{
 		case "message":
