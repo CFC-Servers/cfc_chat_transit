@@ -120,15 +120,12 @@ func queueGroomer() {
 
 		log.Print(message.Type, message.SteamName, message.SteamId, message.Content)
 
-		if message.Type == "message" {
+		switch message.Type{
+		case "message":
 			sendMessage(discord, message)
-		}
-		
-		if message.Type == "connect"{
+		case "connect":
 			sendConnectMessage(discord, message)
-		}
-
-		if message.Type == "disconnect"{
+		case "disconnect":
 			sendDisconnectMessage(discord, message)
 		}
 	}
