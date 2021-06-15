@@ -64,7 +64,7 @@ func sendDisconnectMessage(discord *discordgo.Session, message MessageStruct) {
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
 		},
-		Content:   message.SteamName + " | " + message.SteamId + " has disconnected to the server." ,
+		Content:   message.SteamName + " | " + message.SteamId + " has disconnected from the server." ,
 		Username:  "Relay",
 	}
 
