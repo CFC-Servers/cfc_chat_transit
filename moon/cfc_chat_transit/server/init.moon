@@ -63,13 +63,15 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     irisId = "none"
 
     struct =
-        Realm: Realm
         Type: "message"
-        Content: text
-        Avatar: avatar
-        SteamName: steamName
-        SteamId: steamId
-        IrisId: irisId
+        data:
+            Realm: Realm
+            Type: "message"
+            Content: text
+            Avatar: avatar
+            SteamName: steamName
+            SteamId: steamId
+            IrisId: irisId
 
     message = TableToJSON struct
 
@@ -77,34 +79,39 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
 
     @Logger\debug "Sent message '#{text}' to websocket"
 
-ChatTransit.PlayerConnected = (ply) =>
-    steamName = ply\Nick!
-    steamId = ply\SteamID64!
+ChatTransit.PlayerConnected = (data) =>
+    steamName = data.name
+    steamId = data.networkid
 
     struct =
-        Realm: Realm
         Type: "connect"
-        SteamName: steamName
-        SteamId: steamId
+        data:
+            Realm: Realm
+            SteamName: steamName
+            SteamId: steamId
 
     message = TableToJSON struct
 
     @WebSocket\write message
 
 ChatTransit.PlayerDisconnected = (ply) =>
-    steamName = ply\Nick!
-    steamId = ply\SteamID64!
+    steamName = data.name
+    steamId = data.networkid
 
     struct =
-        Realm: Realm
         Type: "disconnect"
-        SteamName: steamName
-        SteamId: steamId
+        data:
+            Realm: Realm
+            SteamName: steamName
+            SteamId: steamId
 
     message = TableToJSON struct
 
     @WebSocket\write message
 
+gameevent.Listen "player_connect"
+gameevent.Listen "player_disconnect"
+
 hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", ChatTransit\ReceiveMessage, HOOK_MONITOR_LOW
-hook.Add "PlayerConnect", "CFC_ChatTransit_ConnectListener", ChatTransit\PlayerConnected
-hook.Add "PlayerDisconnected", "CFC_ChatTransit_DisconnectListener", ChatTransit\PlayerDisconnected
+hook.Add "player_connect", "CFC_ChatTransit_ConnectListener", ChatTransit\PlayerConnected
+hook.Add "player_disconnect", "CFC_ChatTransit_DisconnectListener", ChatTransit\PlayerDisconnected
