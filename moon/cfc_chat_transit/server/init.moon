@@ -111,6 +111,5 @@ ChatTransit.PlayerDisconnected = (ply) =>
     @WebSocket\write message
 
 hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", ChatTransit\ReceiveMessage, HOOK_MONITOR_LOW
-
 hook.Add "PlayerConnect", "CFC_ChatTransit_ConnectListener", ChatTransit\PlayerConnected
 hook.Add "PlayerDisconnected", "CFC_ChatTransit_DisconnectListener", ChatTransit\PlayerDisconnected
