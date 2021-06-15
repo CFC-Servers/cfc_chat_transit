@@ -78,17 +78,14 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     @Logger\debug "Sent message '#{text}' to websocket"
 
 ChatTransit.PlayerConnected = (ply) =>
-
     steamName = ply\Nick!
     steamId = ply\SteamID64!
-    irisId = "none"
 
     struct =
         Realm: Realm
         Type: "connect"
         SteamName: steamName
         SteamId: steamId
-        IrisId: irisId
 
     message = TableToJSON struct
 
@@ -97,14 +94,12 @@ ChatTransit.PlayerConnected = (ply) =>
 ChatTransit.PlayerDisconnected = (ply) =>
     steamName = ply\Nick!
     steamId = ply\SteamID64!
-    irisId = "none"
 
     struct =
         Realm: Realm
         Type: "disconnect"
         SteamName: steamName
         SteamId: steamId
-        IrisId: irisId
 
     message = TableToJSON struct
 
