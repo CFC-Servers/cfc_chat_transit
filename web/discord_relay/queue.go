@@ -12,6 +12,7 @@ var discord *discordgo.Session
 
 type MessageStruct struct {
 	Realm     string
+	Type 	  string
 	Content   string
 	Avatar    string
 	SteamName string
@@ -50,6 +51,51 @@ func sendMessage(discord *discordgo.Session, message MessageStruct) {
 	discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
 }
 
+func sendConnect(discord *discordgo.Session, message MessageStruct) {
+	var contentBuilder strings.Builder
+	contentBuilder.WriteString(message.Content)
+
+	params := &discordgo.WebhookParams{
+		AllowedMentions: &discordgo.MessageAllowedMentions{
+			Parse: []discordgo.AllowedMentionType{},
+		},
+		Content:   contentBuilder.String(),
+		Username:  "Relay",
+	}
+
+	discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
+}
+
+func sendConnectMessage(discord *discordgo.Session, message MessageStruct) {
+	var contentBuilder strings.Builder
+	contentBuilder.WriteString(message.Content)
+
+	params := &discordgo.WebhookParams{
+		AllowedMentions: &discordgo.MessageAllowedMentions{
+			Parse: []discordgo.AllowedMentionType{},
+		},
+		Content:   message.SteamName + " | " + message.SteamId + " has connected to the server." ,
+		Username:  "Relay",
+	}
+
+	discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
+}
+
+func sendDisconnectMessage(discord *discordgo.Session, message MessageStruct) {
+	var contentBuilder strings.Builder
+	contentBuilder.WriteString(message.Content)
+
+	params := &discordgo.WebhookParams{
+		AllowedMentions: &discordgo.MessageAllowedMentions{
+			Parse: []discordgo.AllowedMentionType{},
+		},
+		Content:   message.SteamName + " | " + message.SteamId + " has disconnected to the server." ,
+		Username:  "Relay",
+	}
+
+	discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
+}
+
 func queueGroomer() {
 	discord, err := discordgo.New("")
 
@@ -72,8 +118,18 @@ func queueGroomer() {
 			return
 		}
 
-		log.Print(message.SteamName, message.SteamId, message.Content)
+		log.Print(message.Type, message.SteamName, message.SteamId, message.Content)
 
-		sendMessage(discord, message)
+		if message.Type == "message" {
+			sendMessage(discord, message)
+		}
+		
+		if message.Type == "connect"{
+			sendConnectMessage(discord, message)
+		}
+
+		if message.Type == "disconnect"{
+			sendDisconnectMessage(discord, message)
+		}
 	}
 }
