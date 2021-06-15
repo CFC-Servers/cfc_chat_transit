@@ -93,7 +93,7 @@ func queueGroomer() {
 			return
 		}
 
-		log.Print(message.Type, message.SteamName, message.SteamId, message.Content)
+		log.Println(message.Type, message.SteamName, message.SteamId, message.Content)
 
 		switch message.Type{
 		case "message":
