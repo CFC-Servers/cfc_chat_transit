@@ -64,7 +64,7 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
 
     struct =
         Type: "message"
-        data:
+        Data:
             Realm: Realm
             Type: "message"
             Content: text
@@ -85,7 +85,7 @@ ChatTransit.PlayerConnected = (data) =>
 
     struct =
         Type: "connect"
-        data:
+        Data:
             Realm: Realm
             SteamName: steamName
             SteamId: steamId
@@ -94,13 +94,13 @@ ChatTransit.PlayerConnected = (data) =>
 
     @WebSocket\write message
 
-ChatTransit.PlayerDisconnected = (ply) =>
+ChatTransit.PlayerDisconnected = (data) =>
     steamName = data.name
     steamId = data.networkid
 
     struct =
         Type: "disconnect"
-        data:
+        Data:
             Realm: Realm
             SteamName: steamName
             SteamId: steamId
