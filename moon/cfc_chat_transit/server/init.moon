@@ -10,7 +10,7 @@ export ChatTransit = {}
 
 readClean = (fileName) ->
     data = Read fileName, "DATA"
-    gsub data, "%s", ""
+    string.gsub data, "%s", ""
 
 RelayPort = readClean "cfc/cfc_relay_port.txt"
 RelayPassword = readClean "cfc/cfc_relay_password.txt"
