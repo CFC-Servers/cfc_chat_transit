@@ -22,4 +22,4 @@ services:
       - .env
     volumes:
       - ./:/build/src
-      - "$AVATARS_DIR:/avatars"
+      - "$AVATARS_DIR:/avatars:z"
