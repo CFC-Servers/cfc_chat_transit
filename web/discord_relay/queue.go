@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/bwmarrin/discordgo"
+	"fmt"
 	"log"
 	"os"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 var discord *discordgo.Session
@@ -30,8 +32,8 @@ var WebhookId string = os.Getenv("WEBHOOK_ID")
 var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
 
 const (
-	JOIN_EMOJI  = "<:bk:812130062379515906>"
-	STEAM_EMOJI = "<:steamsquare:812130007701782588>"
+	JOIN_EMOJI  = "<:green_cross_cir:654105378933571594>"
+	LEAVE_EMOJI = "<:circle_red:855605697978957854>"
 )
 
 func sendMessage(discord *discordgo.Session, message MessageStruct) {
@@ -57,7 +59,7 @@ func sendConnectMessage(discord *discordgo.Session, message MessageStruct) {
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
 		},
-		Content:  message.Data.SteamName + " | " + message.Data.SteamId + " has connected to the server.",
+		Content:  fmt.Sprintf("%v %v | %v has connected to the server", JOIN_EMOJI, message.Data.SteamName, message.Data.SteamId),
 		Username: "Relay",
 	}
 
@@ -69,7 +71,7 @@ func sendDisconnectMessage(discord *discordgo.Session, message MessageStruct) {
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
 		},
-		Content:  message.Data.SteamName + " | " + message.Data.SteamId + " has disconnected from the server.",
+		Content:  fmt.Sprintf("%v %v | %v has disconnected from the server", LEAVE_EMOJI, message.Data.SteamName, message.Data.SteamId),
 		Username: "Relay",
 	}
 
