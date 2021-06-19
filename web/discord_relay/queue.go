@@ -59,7 +59,7 @@ func sendConnectMessage(discord *discordgo.Session, message MessageStruct) {
 		Embeds: []discordgo.MessageEmbed{
 			&discordgo.MessageEmbed{
 				Description: fmt.Sprintf("%v ***Spawned in the server***", JOIN_EMOJI),
-				Color:       65280,
+				Color:       0x65280,
 			},
 		},
 	}
@@ -77,7 +77,7 @@ func sendDisconnectMessage(discord *discordgo.Session, message MessageStruct) {
 		Embeds: []discordgo.MessageEmbed{
 			&discordgo.MessageEmbed{
 				Description: fmt.Sprintf("%v ***Disconnected from the server***", LEAVE_EMOJI),
-				Color:       16711680,
+				Color:       0x16711680,
 			},
 		},
 	}
