@@ -14,7 +14,7 @@ readClean = (fileName) ->
 
 RelayPort = readClean "cfc/cfc_relay_port.txt"
 RelayPassword = readClean "cfc/cfc_relay_password.txt"
-Realm = readClean "cfc/realm.txt"
+Realm = CreateConVar "cfc_realm", "", FCVAR_NONE, "CFC Realm Name"
 
 ChatTransit.Logger = CFCLogger "CFC_ChatTransit"
 ChatTransit.TeamColorCache = {}
@@ -56,7 +56,6 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
 
     @Logger\debug "Received message for #{ply\Nick!}, '#{text}'"
 
-    teamName = ply\Team!
     avatar = ply.PlayerSummary.response.players[1].avatarfull
     steamName = ply\Nick!
     steamId = ply\SteamID64!
@@ -65,7 +64,7 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     struct =
         Type: "message"
         Data:
-            Realm: Realm
+            Realm: Realm\GetString!
             Type: "message"
             Content: text
             Avatar: avatar
@@ -79,29 +78,40 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
 
     @Logger\debug "Sent message '#{text}' to websocket"
 
-ChatTransit.PlayerConnected = (data) =>
-    steamName = data.name
-    steamId = data.networkid
+ChatTransit.PlayerInitialSpawn = (ply) =>
+    sendMessage = (attempts=1) ->
+        if attempts >= 5
+            return @Logger\error "PlayerSummary didn't exist in time to send an on-spawn message"
 
-    struct =
-        Type: "connect"
-        Data:
-            Realm: Realm
-            SteamName: steamName
-            SteamId: steamId
+        if not ply.PlayerSummary
+            return timer.Simple 2, -> sendMessage(attempts + 1)
 
-    message = TableToJSON struct
+        avatar = ply.PlayerSummary.response.players[1].avatarfull
+        steamName = ply\Nick!
+        steamId = ply\SteamID64!
 
-    @WebSocket\write message
+        struct =
+            Type: "connect"
+            Data:
+                Realm: Realm\GetString!
+                Avatar: avatar
+                SteamName: steamName
+                SteamId: steamId
+
+        message = TableToJSON struct
+
+        @WebSocket\write message
 
 ChatTransit.PlayerDisconnected = (data) =>
-    steamName = data.name
-    steamId = data.networkid
+    avatar = ply.PlayerSummary.response.players[1].avatarfull
+    steamName = ply\Nick!
+    steamId = ply\SteamID64!
 
     struct =
         Type: "disconnect"
         Data:
-            Realm: Realm
+            Realm: Realm\GetString!
+            Avatar: avatar
             SteamName: steamName
             SteamId: steamId
 
@@ -109,9 +119,6 @@ ChatTransit.PlayerDisconnected = (data) =>
 
     @WebSocket\write message
 
-gameevent.Listen "player_connect"
-gameevent.Listen "player_disconnect"
-
 hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", ChatTransit\ReceiveMessage, HOOK_MONITOR_LOW
-hook.Add "player_connect", "CFC_ChatTransit_ConnectListener", ChatTransit\PlayerConnected
-hook.Add "player_disconnect", "CFC_ChatTransit_DisconnectListener", ChatTransit\PlayerDisconnected
+hook.Add "PlayerInitialSpawn", "CFC_ChatTransit_SpawnListener", ChatTransit\PlayerInitialSpawn
+hook.Add "PlayerDisconnected", "CFC_ChatTransit_DisconnectListener", ChatTransit\PlayerDisconnected
