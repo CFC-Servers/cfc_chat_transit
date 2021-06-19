@@ -56,8 +56,8 @@ func sendConnectMessage(discord *discordgo.Session, message MessageStruct) {
 		},
 		Username:  message.Data.SteamName,
 		AvatarURL: message.Data.Avatar,
-		Embeds: []discordgo.MessageEmbed{
-			&discordgo.MessageEmbed{
+		Embeds: []*discordgo.MessageEmbed{
+			{
 				Description: fmt.Sprintf("%v ***Spawned in the server***", JOIN_EMOJI),
 				Color:       0x65280,
 			},
@@ -74,8 +74,8 @@ func sendDisconnectMessage(discord *discordgo.Session, message MessageStruct) {
 		},
 		Username:  message.Data.SteamName,
 		AvatarURL: message.Data.Avatar,
-		Embeds: []discordgo.MessageEmbed{
-			&discordgo.MessageEmbed{
+		Embeds: []*discordgo.MessageEmbed{
+			{
 				Description: fmt.Sprintf("%v ***Disconnected from the server***", LEAVE_EMOJI),
 				Color:       0x16711680,
 			},
