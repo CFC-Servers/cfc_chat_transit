@@ -102,6 +102,8 @@ ChatTransit.PlayerInitialSpawn = (ply) =>
 
         @WebSocket\write message
 
+    sendMessage!
+
 ChatTransit.PlayerDisconnected = (data) =>
     avatar = ply.PlayerSummary.response.players[1].avatarfull
     steamName = ply\Nick!
