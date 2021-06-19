@@ -58,7 +58,7 @@ func sendConnectMessage(discord *discordgo.Session, message MessageStruct) {
 		AvatarURL: message.Data.Avatar,
 		Embeds: []discordgo.MessageEmbed{
 			&discordgo.MessageEmbed{
-				Description: fmt.Sprintf("%v ***Connected to the server***", JOIN_EMOJI),
+				Description: fmt.Sprintf("%v ***Spawned in the server***", JOIN_EMOJI),
 				Color:       65280,
 			},
 		},
