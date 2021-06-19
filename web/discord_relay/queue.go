@@ -33,15 +33,10 @@ var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
 
 const (
 	JOIN_EMOJI  = "<:green_cross_cir:654105378933571594>"
-	LEAVE_EMOJI = "<:circle_red:855605697978957854>"
+	LEAVE_EMOJI = "<:red_cross_cir:645096379647000597>"
 )
 
 func sendMessage(discord *discordgo.Session, message MessageStruct) {
-	//profileUrl := "https://steamcommunity.com/profiles/" + message.SteamId
-	//joinUrl := "https://cfcservers.org/" + strings.ToLower(message.Realm) + "/join"
-	//contentBuilder.WriteString(fmt.Sprintf("[%v](<%v>) ", JOIN_EMOJI, joinUrl))
-	//contentBuilder.WriteString(fmt.Sprintf("[%v](<%v>) ", STEAM_EMOJI, profileUrl))
-
 	params := &discordgo.WebhookParams{
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
@@ -59,8 +54,14 @@ func sendConnectMessage(discord *discordgo.Session, message MessageStruct) {
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
 		},
-		Content:  fmt.Sprintf("%v %v | %v has connected to the server", JOIN_EMOJI, message.Data.SteamName, message.Data.SteamId),
-		Username: "Relay",
+		Username:  message.Data.SteamName,
+		AvatarURL: message.Data.Avatar,
+		Embeds: []discordgo.MessageEmbed{
+		    &discordgo.MessageEmbed{
+                Description: fmt.Sprintf("%v ***Connected to the server***", JOIN_EMOJI),
+                Color:       65280,
+            },
+		},
 	}
 
 	discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
@@ -71,8 +72,14 @@ func sendDisconnectMessage(discord *discordgo.Session, message MessageStruct) {
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
 		},
-		Content:  fmt.Sprintf("%v %v | %v has disconnected from the server", LEAVE_EMOJI, message.Data.SteamName, message.Data.SteamId),
-		Username: "Relay",
+		Username:  message.Data.SteamName,
+		AvatarURL: message.Data.Avatar,
+		Embeds: []discordgo.MessageEmbed{
+		    &discordgo.MessageEmbed{
+                Description: fmt.Sprintf("%v ***Disconnected from the server***", LEAVE_EMOJI),
+                Color:       16711680,
+            },
+		},
 	}
 
 	discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
