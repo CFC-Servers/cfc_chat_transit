@@ -80,13 +80,16 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
 
 ChatTransit.PlayerInitialSpawn = (ply) =>
     sendMessage = (attempts=1) ->
+        local avatar
+
         if attempts >= 5
             @Logger\warn "PlayerSummary didn't exist in time to send an on-spawn message"
         else
-            if not ply.PlayerSummary
+            if ply.PlayerSummary
+                avatar = ply.PlayerSummary.response.players[1].avatarfull
+            else
                 return timer.Simple 2, -> sendMessage(attempts + 1)
 
-        avatar = ply.PlayerSummary.response.players[1].avatarfull
         steamName = ply\Nick!
         steamId = ply\SteamID64!
 
