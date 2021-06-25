@@ -41,8 +41,8 @@ const (
 
 var re = regexp.MustCompile(regexString)
 
-func escapeUrl(Message string) string {
-	return "<" + Message + ">"
+func escapeUrl(message string) string {
+	return "<" + message + ">"
 }
 
 func sendMessage(discord *discordgo.Session, message MessageStruct) {
