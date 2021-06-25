@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -31,17 +32,26 @@ var MessageQueue = make(chan []byte, 100)
 var WebhookId string = os.Getenv("WEBHOOK_ID")
 var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
 
+const regexString = `https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)`
+
 const (
 	JOIN_EMOJI  = "<:green_cross_cir:654105378933571594>"
 	LEAVE_EMOJI = "<:red_cross_cir:645096379647000597>"
 )
 
+var re = regexp.MustCompile(regexString)
+
+func escapeUrl(Message string) string {
+	return "<" + Message + ">"
+}
+
 func sendMessage(discord *discordgo.Session, message MessageStruct) {
+	var messageContent = re.ReplaceAllStringFunc(message.Data.Content, escapeUrl)
 	params := &discordgo.WebhookParams{
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
 		},
-		Content:   message.Data.Content,
+		Content:   messageContent,
 		Username:  message.Data.SteamName,
 		AvatarURL: message.Data.Avatar,
 	}
