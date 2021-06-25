@@ -32,21 +32,21 @@ var MessageQueue = make(chan []byte, 100)
 var WebhookId string = os.Getenv("WEBHOOK_ID")
 var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
 
-const regexString = `https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)`
+const urlRegexString = `https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)`
 
 const (
 	JOIN_EMOJI  = "<:green_cross_cir:654105378933571594>"
 	LEAVE_EMOJI = "<:red_cross_cir:645096379647000597>"
 )
 
-var re = regexp.MustCompile(regexString)
+var urlPattern = regexp.MustCompile(urlRegexString)
 
 func escapeUrl(message string) string {
 	return "<" + message + ">"
 }
 
 func sendMessage(discord *discordgo.Session, message MessageStruct) {
-	messageContent := re.ReplaceAllStringFunc(message.Data.Content, escapeUrl)
+	messageContent := urlPattern.ReplaceAllStringFunc(message.Data.Content, escapeUrl)
 	params := &discordgo.WebhookParams{
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
