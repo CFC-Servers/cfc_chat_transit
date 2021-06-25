@@ -46,7 +46,7 @@ func escapeUrl(Message string) string {
 }
 
 func sendMessage(discord *discordgo.Session, message MessageStruct) {
-	var messageContent = re.ReplaceAllStringFunc(message.Data.Content, escapeUrl)
+	messageContent := re.ReplaceAllStringFunc(message.Data.Content, escapeUrl)
 	params := &discordgo.WebhookParams{
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
