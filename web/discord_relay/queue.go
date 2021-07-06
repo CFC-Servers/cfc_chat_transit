@@ -46,11 +46,11 @@ func sendMessage(discord *discordgo.Session, message MessageStruct) {
 		AvatarURL: message.Data.Avatar,
 	}
 
-    _, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
+	_, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
 
-    if err != nil {
-        log.Print(err)
-    }
+	if err != nil {
+		log.Print(err)
+	}
 }
 
 func sendConnectMessage(discord *discordgo.Session, message MessageStruct) {
@@ -68,11 +68,11 @@ func sendConnectMessage(discord *discordgo.Session, message MessageStruct) {
 		},
 	}
 
-    _, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
+	_, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
 
-    if err != nil {
-        log.Print(err)
-    }
+	if err != nil {
+		log.Print(err)
+	}
 }
 
 func sendDisconnectMessage(discord *discordgo.Session, message MessageStruct) {
@@ -85,16 +85,16 @@ func sendDisconnectMessage(discord *discordgo.Session, message MessageStruct) {
 		Embeds: []*discordgo.MessageEmbed{
 			{
 				Description: fmt.Sprintf("%v ***Disconnected from the server***", LEAVE_EMOJI),
-				Color:       0x167116,
+				Color:       0x990000,
 			},
 		},
 	}
 
-    _, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
+	_, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
 
-    if err != nil {
-        log.Print(err)
-    }
+	if err != nil {
+		log.Print(err)
+	}
 }
 
 func queueGroomer() {
