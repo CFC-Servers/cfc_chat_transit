@@ -11,12 +11,12 @@ import (
 
 var discord *discordgo.Session
 
-type MessageStruct struct {
+type EventStruct struct {
 	Type string
-	Data MessageData
+	Data EventData
 }
 
-type MessageData struct {
+type EventData struct {
 	Realm     string
 	Type      string
 	Content   string
@@ -36,7 +36,7 @@ const (
 	LEAVE_EMOJI = "<:circle_red:855605697978957854>"
 )
 
-func sendMessage(discord *discordgo.Session, message MessageStruct) {
+func sendMessage(discord *discordgo.Session, message EventStruct) {
 	params := &discordgo.WebhookParams{
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
@@ -53,17 +53,17 @@ func sendMessage(discord *discordgo.Session, message MessageStruct) {
 	}
 }
 
-func sendConnectMessage(discord *discordgo.Session, message MessageStruct) {
+func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, color int, emoji string) {
 	params := &discordgo.WebhookParams{
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
 		},
-		Username:  message.Data.SteamName,
-		AvatarURL: message.Data.Avatar,
+		Username:  event.Data.SteamName,
+		AvatarURL: event.Data.Avatar,
 		Embeds: []*discordgo.MessageEmbed{
 			{
-				Description: fmt.Sprintf("%v ***Spawned in the server***", JOIN_EMOJI),
-				Color:       0x009900,
+				Description: fmt.Sprintf("%v ***%v***", emoji, eventText),
+				Color:       color,
 			},
 		},
 	}
@@ -75,26 +75,12 @@ func sendConnectMessage(discord *discordgo.Session, message MessageStruct) {
 	}
 }
 
-func sendDisconnectMessage(discord *discordgo.Session, message MessageStruct) {
-	params := &discordgo.WebhookParams{
-		AllowedMentions: &discordgo.MessageAllowedMentions{
-			Parse: []discordgo.AllowedMentionType{},
-		},
-		Username:  message.Data.SteamName,
-		AvatarURL: message.Data.Avatar,
-		Embeds: []*discordgo.MessageEmbed{
-			{
-				Description: fmt.Sprintf("%v ***Disconnected from the server***", LEAVE_EMOJI),
-				Color:       0x990000,
-			},
-		},
-	}
+func sendConnectMessage(discord *discordgo.Session, event EventStruct) {
+	sendEvent(discord, event, "Spawned in the server", 0x009900, JOIN_EMOJI)
+}
 
-	_, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
-
-	if err != nil {
-		log.Print(err)
-	}
+func sendDisconnectMessage(discord *discordgo.Session, event EventStruct) {
+	sendEvent(discord, event, "Disconnected from the server", 0x990000, LEAVE_EMOJI)
 }
 
 func queueGroomer() {
@@ -112,7 +98,7 @@ func queueGroomer() {
 	for {
 		rawMessage := <-MessageQueue
 		log.Print("Received message from queue: ", string(rawMessage))
-		var message MessageStruct
+		var message EventStruct
 
 		if err := json.Unmarshal(rawMessage, &message); err != nil {
 			log.Printf("Error unmarshalling json: %v", err)
