@@ -1,5 +1,5 @@
 require "gwsockets"
-require "cfclogger"
+require "logger"
 
 import lshift from bit
 import Read from file
@@ -16,7 +16,7 @@ RelayPort = readClean "cfc/cfc_relay_port.txt"
 RelayPassword = readClean "cfc/cfc_relay_password.txt"
 Realm = CreateConVar "cfc_realm", "", FCVAR_NONE, "CFC Realm Name"
 
-ChatTransit.Logger = CFCLogger "CFC_ChatTransit"
+ChatTransit.Logger = Logger "CFC_ChatTransit"
 ChatTransit.TeamColorCache = {}
 ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1:#{RelayPort}/relay"
 
