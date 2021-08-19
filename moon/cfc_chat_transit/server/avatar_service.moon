@@ -46,6 +46,7 @@ ChatTransit.AvatarService = AvatarService ChatTransit.Logger
 
 hook.Add "CFC_SteamLookup_SuccessfulPlayerData", "CFC_ChatTransit_AvatarService", (dataName, ply, data) ->
     return unless dataName == "PlayerSummary"
+    return unless data
 
     ChatTransit.AvatarService\outlineAvatar ply, data
 
