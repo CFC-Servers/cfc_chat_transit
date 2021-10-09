@@ -129,7 +129,7 @@ ChatTransit.AnticrashEvent = (eventText="Heavy lag detected!") =>
         Type: "anticrash_event"
         Data:
             Realm: Realm\GetString!
-            Text: eventText
+            Content: eventText
             SteamName: "CFC Anticrash"
             Avatar: ""
 

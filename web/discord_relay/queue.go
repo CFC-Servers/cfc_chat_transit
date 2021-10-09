@@ -96,7 +96,7 @@ func sendDisconnectMessage(discord *discordgo.Session, event EventStruct) {
 }
 
 func sendAnticrashMessage(discord *discordgo.Session, event EventStruct) {
-	sendEvent(discord, event, EventStruct.Data.Text, 0xE7373E, HALTED_EMOJI)
+	sendEvent(discord, event, event.Data.Content, 0xE7373E, HALTED_EMOJI)
 }
 
 func queueGroomer() {
