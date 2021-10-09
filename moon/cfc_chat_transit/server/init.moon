@@ -124,6 +124,22 @@ ChatTransit.PlayerDisconnected = (ply) =>
 
     @WebSocket\write message
 
+ChatTransit.AnticrashEvent = (eventText="Heavy lag detected!") =>
+    struct =
+        Type: "anticrash_event"
+        Data:
+            Realm: Realm\GetString!
+            Text: eventText
+            SteamName: "CFC Anticrash"
+            Avatar: "https://i.imgur.com/WpecHfU.png"
+
+    message = TableToJSON struct
+
+    @WebSocket\write message
+
 hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", ChatTransit\ReceiveMessage, HOOK_MONITOR_LOW
 hook.Add "PlayerInitialSpawn", "CFC_ChatTransit_SpawnListener", ChatTransit\PlayerInitialSpawn
 hook.Add "PlayerDisconnected", "CFC_ChatTransit_DisconnectListener", ChatTransit\PlayerDisconnected
+hook.Add "z_anticrash_LagDetect", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
+hook.Add "z_anticrash_LagStuck", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
+hook.Add "z_anticrash_CrashPrevented", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent

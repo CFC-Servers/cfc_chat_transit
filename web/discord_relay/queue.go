@@ -37,6 +37,7 @@ const urlRegexString = `https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{
 const (
 	JOIN_EMOJI  = "<:green_cross_cir:654105378933571594>"
 	LEAVE_EMOJI = "<:circle_red:855605697978957854>"
+	HALTED_EMOJI = "<:halted:398133588010336259>"
 )
 
 var urlPattern = regexp.MustCompile(urlRegexString)
@@ -94,6 +95,10 @@ func sendDisconnectMessage(discord *discordgo.Session, event EventStruct) {
 	sendEvent(discord, event, "Disconnected from the server", 0x990000, LEAVE_EMOJI)
 }
 
+func sendAnticrashMessage(discord *discordgo.Session, event EventStruct) {
+	sendEvent(discord, event, EventStruct.Data.Text, 0xE7373E, HALTED_EMOJI)
+}
+
 func queueGroomer() {
 	discord, err := discordgo.New("")
 
@@ -125,6 +130,8 @@ func queueGroomer() {
 			sendConnectMessage(discord, message)
 		case "disconnect":
 			sendDisconnectMessage(discord, message)
+		case "anticrash_event":
+			sendAnticrashMessage(discord, message)
 		}
 	}
 }
