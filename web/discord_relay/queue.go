@@ -35,8 +35,8 @@ var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
 const urlRegexString = `https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)`
 
 const (
-	JOIN_EMOJI  = "<:green_cross_cir:654105378933571594>"
-	LEAVE_EMOJI = "<:circle_red:855605697978957854>"
+	JOIN_EMOJI   = "<:green_cross_cir:654105378933571594>"
+	LEAVE_EMOJI  = "<:circle_red:855605697978957854>"
 	HALTED_EMOJI = "<:halted:398133588010336259>"
 )
 
