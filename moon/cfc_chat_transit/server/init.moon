@@ -124,7 +124,12 @@ ChatTransit.PlayerDisconnected = (ply) =>
 
     @WebSocket\write message
 
-ChatTransit.AnticrashEvent = (eventText="Heavy lag detected!") =>
+ChatTransit.AnticrashEvent = (eventText) =>
+    argType = type eventText
+
+    if argType ~= "string"
+        eventText = "Heavy lag detected!"
+
     struct =
         Type: "anticrash_event"
         Data:
