@@ -38,6 +38,7 @@ const (
 	JOIN_EMOJI   = "<:green_cross_cir:654105378933571594>"
 	LEAVE_EMOJI  = "<:circle_red:855605697978957854>"
 	HALTED_EMOJI = "<:halted:398133588010336259>"
+	COP_EMOJI = "👮"
 )
 
 var urlPattern = regexp.MustCompile(urlRegexString)
@@ -88,15 +89,35 @@ func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, 
 }
 
 func sendConnectMessage(discord *discordgo.Session, event EventStruct) {
+    steamLink := "https://steamid.io/lookup/" + event.Data.SteamId
+    message := "[Connected to the server](" + steamLink + ")"
+	sendEvent(discord, event, message, 0x009900, JOIN_EMOJI)
+}
+
+func sendSpawnMessage(discord *discordgo.Session, event EventStruct) {
 	sendEvent(discord, event, "Spawned in the server", 0x009900, JOIN_EMOJI)
 }
 
 func sendDisconnectMessage(discord *discordgo.Session, event EventStruct) {
-	sendEvent(discord, event, "Disconnected from the server", 0x990000, LEAVE_EMOJI)
+    reason := event.Data.Reason
+    steamLink := "https://steamid.io/lookup/" + event.Data.SteamId
+    message := "[Disconnected from the server](" + steamLink + ")"
+
+    if strings.Contains(reason, "\n") {
+        message = message + "\n```" + reason + "\n```"
+    } else {
+        message = message = " (" + reason + ")"
+    }
+
+	sendEvent(discord, event, message, 0x990000, LEAVE_EMOJI)
 }
 
 func sendAnticrashMessage(discord *discordgo.Session, event EventStruct) {
 	sendEvent(discord, event, event.Data.Content, 0xE7373E, HALTED_EMOJI)
+}
+
+func sendUlxAction(discord *discordgo.Session, event EventStruct) {
+	sendEvent(discord, event, event.Data.Messsage, 0xE7373E, COP_EMOJI)
 }
 
 func queueGroomer() {
@@ -128,10 +149,14 @@ func queueGroomer() {
 			sendMessage(discord, message)
 		case "connect":
 			sendConnectMessage(discord, message)
+		case "spawn":
+			sendConnectMessage(discord, message)
 		case "disconnect":
 			sendDisconnectMessage(discord, message)
 		case "anticrash_event":
 			sendAnticrashMessage(discord, message)
+		case "ulx_action":
+			sendUlxAction(discord, message)
 		}
 	}
 }
