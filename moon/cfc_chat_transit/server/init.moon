@@ -78,6 +78,17 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
 
     @Logger\debug "Sent message '#{text}' to websocket"
 
+ChatTransit.PlayerAuthed = (ply, steamid) =>
+    steamName = ply\Nick!
+    struct =
+        Type: "connect"
+        Data:
+            SteamName: steamName
+            SteamId: steamid
+
+    message = TableToJSON struct
+    @WebSocket\write message
+
 ChatTransit.PlayerInitialSpawn = (ply) =>
     sendMessage = (attempts=1) ->
         local avatar
@@ -94,7 +105,7 @@ ChatTransit.PlayerInitialSpawn = (ply) =>
         steamId = ply\SteamID64!
 
         struct =
-            Type: "connect"
+            Type: "spawn"
             Data:
                 Realm: Realm\GetString!
                 Avatar: avatar
@@ -102,7 +113,6 @@ ChatTransit.PlayerInitialSpawn = (ply) =>
                 SteamId: steamId
 
         message = TableToJSON struct
-
         @WebSocket\write message
 
     sendMessage!
@@ -143,6 +153,7 @@ ChatTransit.AnticrashEvent = (eventText) =>
     @WebSocket\write message
 
 hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", ChatTransit\ReceiveMessage, HOOK_MONITOR_LOW
+hook.Add "PlayerAuthed", "CFC_ChatTransit_SpawnListener", ChatTransit\PlayerAuthed
 hook.Add "PlayerInitialSpawn", "CFC_ChatTransit_SpawnListener", ChatTransit\PlayerInitialSpawn
 hook.Add "PlayerDisconnected", "CFC_ChatTransit_DisconnectListener", ChatTransit\PlayerDisconnected
 hook.Add "z_anticrash_LagDetect", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
