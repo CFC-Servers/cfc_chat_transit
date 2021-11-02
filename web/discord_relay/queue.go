@@ -106,7 +106,7 @@ func sendDisconnectMessage(discord *discordgo.Session, event EventStruct) {
     if strings.Contains(reason, "\n") {
         message = message + "\n```" + reason + "\n```"
     } else {
-        message = message = " (" + reason + ")"
+        message = message + " (" + reason + ")"
     }
 
 	sendEvent(discord, event, message, 0x990000, LEAVE_EMOJI)
