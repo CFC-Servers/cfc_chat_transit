@@ -24,7 +24,7 @@ class AvatarService
             type: "application/json"
 
     setOutlinedAvatar: (ply, avatarUrl) =>
-        data = ply.PlayerSummary.response.players[1]
+        data = ply.SteamLookup.PlayerSummary.response.players[1]
 
         data.originalAvatarFull or= data.avatarfull
         data.avatarfull = avatarUrl
