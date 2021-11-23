@@ -142,15 +142,17 @@ ChatTransit.AnticrashEvent = (eventText) =>
 
     @WebSocket\write message
 
-care = (f) ->
-    success, err = pcall f
+care = (f) -> (...) ->
+    args = {...}
+
+    success, err = pcall -> f unpack args
     error err unless success
 
     return nil
 
 hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", care(ChatTransit\ReceiveMessage), HOOK_MONITOR_LOW
 hook.Add "PlayerInitialSpawn", "CFC_ChatTransit_SpawnListener", care ChatTransit\PlayerInitialSpawn
-hook.Add "PlayerDisconnected", "CFC_ChatTransit_DisconnectListener", -> care ChatTransit\PlayerDisconnected
+hook.Add "PlayerDisconnected", "CFC_ChatTransit_DisconnectListener", care ChatTransit\PlayerDisconnected
 hook.Add "z_anticrash_LagDetect", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
 hook.Add "z_anticrash_LagStuck", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
 hook.Add "z_anticrash_CrashPrevented", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
