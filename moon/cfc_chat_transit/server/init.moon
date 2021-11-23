@@ -108,7 +108,7 @@ ChatTransit.PlayerInitialSpawn = (ply) =>
     sendMessage!
 
 ChatTransit.PlayerDisconnected = (ply) =>
-    avatar = ply.PlayerSummary.response.players[1].avatarfull
+    avatar = ply.SteamLookup.PlayerSummary.response.players[1].avatarfull
     steamName = ply\Nick!
     steamId = ply\SteamID64!
 
