@@ -56,7 +56,7 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
 
     @Logger\debug "Received message for #{ply\Nick!}, '#{text}'"
 
-    avatar = ply.PlayerSummary.response.players[1].avatarfull
+    avatar = ply.SteamLookup.PlayerSummary.response.players[1].avatarfull
     steamName = ply\Nick!
     steamId = ply\SteamID64!
     irisId = "none"
@@ -85,8 +85,8 @@ ChatTransit.PlayerInitialSpawn = (ply) =>
         if attempts >= 5
             @Logger\warn "PlayerSummary didn't exist in time to send an on-spawn message"
         else
-            if ply.PlayerSummary
-                avatar = ply.PlayerSummary.response.players[1].avatarfull
+            if ply.SteamLookup
+                avatar = ply.SteamLookup.PlayerSummary.response.players[1].avatarfull
             else
                 return timer.Simple 2, -> sendMessage(attempts + 1)
 
@@ -142,9 +142,15 @@ ChatTransit.AnticrashEvent = (eventText) =>
 
     @WebSocket\write message
 
-hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", ChatTransit\ReceiveMessage, HOOK_MONITOR_LOW
-hook.Add "PlayerInitialSpawn", "CFC_ChatTransit_SpawnListener", ChatTransit\PlayerInitialSpawn
-hook.Add "PlayerDisconnected", "CFC_ChatTransit_DisconnectListener", ChatTransit\PlayerDisconnected
+care = (f) ->
+    success, err = pcall f
+    error err unless success
+
+    return nil
+
+hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", care(ChatTransit\ReceiveMessage), HOOK_MONITOR_LOW
+hook.Add "PlayerInitialSpawn", "CFC_ChatTransit_SpawnListener", care ChatTransit\PlayerInitialSpawn
+hook.Add "PlayerDisconnected", "CFC_ChatTransit_DisconnectListener", -> care ChatTransit\PlayerDisconnected
 hook.Add "z_anticrash_LagDetect", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
 hook.Add "z_anticrash_LagStuck", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
 hook.Add "z_anticrash_CrashPrevented", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
