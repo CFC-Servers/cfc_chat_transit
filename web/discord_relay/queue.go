@@ -48,6 +48,11 @@ func escapeUrl(message string) string {
 	return "<" + message + ">"
 }
 
+func steamLinkMessage(event EventStruct, message string) string {
+	steamLink := "https://steamid.io/lookup/" + event.Data.SteamId
+	return "[" + message + "](" + steamLink + ")"
+}
+
 func sendMessage(discord *discordgo.Session, message EventStruct) {
 	messageContent := urlPattern.ReplaceAllStringFunc(message.Data.Content, escapeUrl)
 
@@ -90,19 +95,18 @@ func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, 
 }
 
 func sendConnectMessage(discord *discordgo.Session, event EventStruct) {
-	steamLink := "https://steamid.io/lookup/" + event.Data.SteamId
-	message := "[Connected to the server](" + steamLink + ")"
+	message := steamLinkMessage(event, "Connected to the server")
 	sendEvent(discord, event, message, 0x009900, JOIN_EMOJI)
 }
 
 func sendSpawnMessage(discord *discordgo.Session, event EventStruct) {
-	sendEvent(discord, event, "Spawned in the server", 0x009900, JOIN_EMOJI)
+	message := steamLinkMessage(event, "Spawned in the server")
+	sendEvent(discord, event, message, 0x009900, JOIN_EMOJI)
 }
 
 func sendDisconnectMessage(discord *discordgo.Session, event EventStruct) {
-	reason := event.Data.Reason
-	steamLink := "https://steamid.io/lookup/" + event.Data.SteamId
-	message := "[Disconnected from the server](" + steamLink + ")"
+	reason := event.Data.Content
+	message := steamLinkMessage(event, "Disconnected from the server")
 
 	if strings.Contains(reason, "\n") {
 		message = message + "\n```" + reason + "\n```"
@@ -118,7 +122,7 @@ func sendAnticrashMessage(discord *discordgo.Session, event EventStruct) {
 }
 
 func sendUlxAction(discord *discordgo.Session, event EventStruct) {
-	sendEvent(discord, event, event.Data.Message, 0xE7373E, COP_EMOJI)
+	sendEvent(discord, event, event.Data.Content, 0xE7373E, COP_EMOJI)
 }
 
 func queueGroomer() {
