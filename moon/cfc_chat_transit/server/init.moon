@@ -17,29 +17,30 @@ RelayPassword = readClean "cfc/cfc_relay_password.txt"
 Realm = CreateConVar "cfc_realm", "", FCVAR_NONE, "CFC Realm Name"
 
 ChatTransit.Logger = Logger "CFC_ChatTransit"
-ChatTransit.TeamColorCache = {}
 ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1:#{RelayPort}/relay"
 
+logger = ChatTransit.Logger
+
 with ChatTransit.WebSocket
-    Logger = ChatTransit.Logger
     .reconnectTimerName = "CFC_ChatTransit_WebsocketReconnect"
 
     .onConnected = =>
-        Logger\info "Established websocket connection"
+        logger\info "Established websocket connection"
         Remove .reconnectTimerName
 
     .onDisconnected = =>
-        Logger\warn "Lost websocket connection!"
+        logger\warn "Lost websocket connection!"
 
         if Exists .reconnectTimerName
-            return Logger\warn "Will retry #{RepsLeft .reconnectTimerName} more times"
+            return logger\warn "Will retry #{RepsLeft .reconnectTimerName} more times"
 
         Create .reconnectTimerName, 2, 30, -> \open!
 
-    .onError = (message) => Logger\error "Websocket Error!", message
+    .onError = (message) => logger\error "Websocket Error!", message
 
     \open!
 
+ChatTransit.TeamColorCache = {}
 ChatTransit.GetTeamColor = (teamName) =>
     return @TeamColorCache[teamName] if @TeamColorCache[teamName]
 
@@ -49,109 +50,7 @@ ChatTransit.GetTeamColor = (teamName) =>
 
     teamColor
 
-ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
-    return if teamChat
-    return unless text
-    return if text == ""
-
-    @Logger\debug "Received message for #{ply\Nick!}, '#{text}'"
-
-    avatar = ply.SteamLookup.PlayerSummary.response.players[1].avatarfull
-    steamName = ply\Nick!
-    steamId = ply\SteamID64!
-    irisId = "none"
-
-    struct =
-        Type: "message"
-        Data:
-            Realm: Realm\GetString!
-            Type: "message"
-            Content: text
-            Avatar: avatar
-            SteamName: steamName
-            SteamId: steamId
-            IrisId: irisId
-
-    message = TableToJSON struct
-
-    @WebSocket\write message
-
-    @Logger\debug "Sent message '#{text}' to websocket"
-
-ChatTransit.PlayerAuthed = (ply, steamid) =>
-    steamName = ply\Nick!
-    struct =
-        Type: "connect"
-        Data:
-            SteamName: steamName
-            SteamId: steamid
-
-    message = TableToJSON struct
-    @WebSocket\write message
-
-ChatTransit.PlayerInitialSpawn = (ply) =>
-    sendMessage = (attempts=1) ->
-        local avatar
-
-        if attempts >= 5
-            @Logger\warn "PlayerSummary didn't exist in time to send an on-spawn message"
-        else
-            if ply.SteamLookup
-                avatar = ply.SteamLookup.PlayerSummary.response.players[1].avatarfull
-            else
-                return timer.Simple 2, -> sendMessage(attempts + 1)
-
-        steamName = ply\Nick!
-        steamId = ply\SteamID64!
-
-        struct =
-            Type: "spawn"
-            Data:
-                Realm: Realm\GetString!
-                Avatar: avatar
-                SteamName: steamName
-                SteamId: steamId
-
-        message = TableToJSON struct
-        @WebSocket\write message
-
-    sendMessage!
-
-ChatTransit.PlayerDisconnected = (ply) =>
-    avatar = ply.SteamLookup.PlayerSummary.response.players[1].avatarfull
-    steamName = ply\Nick!
-    steamId = ply\SteamID64!
-
-    struct =
-        Type: "disconnect"
-        Data:
-            Realm: Realm\GetString!
-            Avatar: avatar
-            SteamName: steamName
-            SteamId: steamId
-
-    message = TableToJSON struct
-
-    @WebSocket\write message
-
-ChatTransit.AnticrashEvent = (eventText) =>
-    argType = type eventText
-
-    if argType ~= "string"
-        eventText = "Heavy lag detected!"
-
-    struct =
-        Type: "anticrash_event"
-        Data:
-            Realm: Realm\GetString!
-            Content: eventText
-            SteamName: "CFC Anticrash"
-            Avatar: ""
-
-    message = TableToJSON struct
-
-    @WebSocket\write message
-
-hook.Add "z_anticrash_LagDetect", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
-hook.Add "z_anticrash_LagStuck", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
-hook.Add "z_anticrash_CrashPrevented", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
+logger\info "Loading modules..."
+for f in *file.Find "cfc_chat_transit/server/modules/*.lua", "LUA"
+    logger\info "Loading #{f}"
+    include f
