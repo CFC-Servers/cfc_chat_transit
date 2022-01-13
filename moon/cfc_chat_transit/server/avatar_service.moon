@@ -7,13 +7,13 @@ AvatarServiceAddress = string.Replace AvatarServiceAddress, "\n", ""
 
 class AvatarService
     new: (logger) =>
-        @Logger = logger
+        @logger = logger\scope "AvatarService"
         @outlinerUrl = "http://#{AvatarServiceAddress}/outline"
 
     processAvatar: (avatarUrl, outlineColor, success, failed) =>
         body = TableToJSON { :avatarUrl, :outlineColor }
 
-        @Logger\debug "Sending data to outliner: ", body
+        @logger\debug "Sending data to outliner: ", body
 
         HTTP
             :success
@@ -30,15 +30,15 @@ class AvatarService
         data.avatarfull = avatarUrl
 
     outlineAvatar: (ply, data) =>
-        @Logger\debug "Received request to outline avatar for ply: #{ply\Nick!}"
+        @logger\debug "Received request to outline avatar for ply: #{ply\Nick!}"
         avatar = data.response.players[1].avatarfull
         outlineColor = ChatTransit\GetTeamColor ply\Team!
 
         success = (code, body) ->
-            @Logger\debug "Avatar request succeeded with code: #{code} | Body: #{body}"
+            @logger\debug "Avatar request succeeded with code: #{code} | Body: #{body}"
             @setOutlinedAvatar ply, body
 
-        failed = (err) -> @Logger\error err
+        failed = (err) -> @logger\error err
 
         @processAvatar avatar, outlineColor, success, failed
 
