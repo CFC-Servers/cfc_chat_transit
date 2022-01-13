@@ -144,7 +144,7 @@ func queueGroomer() {
 
 		if err := json.Unmarshal(rawMessage, &message); err != nil {
 			log.Printf("Error unmarshalling json: %v", err)
-			return
+			continue
 		}
 
 		log.Println(message.Type, message.Data.SteamName, message.Data.SteamId, message.Data.Content)
