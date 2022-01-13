@@ -1,11 +1,9 @@
 require "gwsockets"
 require "logger"
 
-import lshift from bit
 import Read from file
 import GetColor from team
 import TableToJSON from util
-import Create, Exists, Remove, RepsLeft from timer
 export ChatTransit = {}
 
 readClean = (fileName) ->
@@ -14,10 +12,10 @@ readClean = (fileName) ->
 
 RelayPort = readClean "cfc/cfc_relay_port.txt"
 RelayPassword = readClean "cfc/cfc_relay_password.txt"
-Realm = CreateConVar "cfc_realm", "", FCVAR_NONE, "CFC Realm Name"
 
 ChatTransit.Logger = Logger "CFC_ChatTransit"
 ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1:#{RelayPort}/relay"
+ChatTransit.Realm = CreateConVar "cfc_realm", "", FCVAR_NONE, "CFC Realm Name"
 
 logger = ChatTransit.Logger
 
@@ -26,19 +24,25 @@ with ChatTransit.WebSocket
 
     .onConnected = =>
         logger\info "Established websocket connection"
-        Remove .reconnectTimerName
+        timer.Remove .reconnectTimerName
 
     .onDisconnected = =>
         logger\warn "Lost websocket connection!"
 
-        if Exists .reconnectTimerName
-            return logger\warn "Will retry #{RepsLeft .reconnectTimerName} more times"
+        if timer.Exists .reconnectTimerName
+            return logger\warn "Will retry #{timer.RepsLeft .reconnectTimerName} more times"
 
-        Create .reconnectTimerName, 2, 30, -> \open!
+        timer.Create .reconnectTimerName, 2, 30, -> \open!
 
     .onError = (message) => logger\error "Websocket Error!", message
 
     \open!
+
+ChatTransit.Send = (data) =>
+    @logger\info "Sending '#{data.Type}'"
+    data.Realm = @Realm\GetString!
+
+    @WebSocket\write TableToJSON data
 
 ChatTransit.TeamColorCache = {}
 ChatTransit.GetTeamColor = (teamName) =>
