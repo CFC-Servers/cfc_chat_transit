@@ -1,13 +1,9 @@
-ChatTransit.PlayerAuthed = (ply, steamid) =>
-    steamName = ply\Nick!
-    struct =
+ChatTransit.PlayerAuthed = (ply, steamId) =>
+    @Send
         Type: "connect"
         Data:
-            SteamName: steamName
-            SteamId: steamid
-
-    message = TableToJSON struct
-    @WebSocket\write message
+            SteamName: ply\Nick!
+            SteamId: steamId
 
 ChatTransit.PlayerInitialSpawn = (ply) =>
     sendMessage = (attempts=1) ->
@@ -19,21 +15,14 @@ ChatTransit.PlayerInitialSpawn = (ply) =>
             if ply.PlayerSummary
                 avatar = ply.PlayerSummary.response.players[1].avatarfull
             else
-                return timer.Simple 2, -> sendMessage(attempts + 1)
+                return timer.Simple 2 + attempts, -> sendMessage(attempts + 1)
 
-        steamName = ply\Nick!
-        steamId = ply\SteamID64!
-
-        struct =
+        @Send
             Type: "spawn"
             Data:
-                Realm: Realm\GetString!
                 Avatar: avatar
-                SteamName: steamName
-                SteamId: steamId
-
-        message = TableToJSON struct
-        @WebSocket\write message
+                SteamName: ply\Nick!
+                SteamId: ply\SteamID64!
 
     sendMessage!
 

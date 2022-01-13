@@ -1,18 +1,11 @@
 ChatTransit.PlayerDisconnected = (ply) =>
     avatar = ply.PlayerSummary.response.players[1].avatarfull
-    steamName = ply\Nick!
-    steamId = ply\SteamID64!
 
-    struct =
+    @Send
         Type: "disconnect"
         Data:
-            Realm: Realm\GetString!
             Avatar: avatar
-            SteamName: steamName
-            SteamId: steamId
-
-    message = TableToJSON struct
-
-    @WebSocket\write message
+            SteamName: ply\Nick!
+            SteamId: ply\SteamID64!
 
 hook.Add "PlayerDisconnected", "CFC_ChatTransit_DisconnectListener", ChatTransit\PlayerDisconnected
