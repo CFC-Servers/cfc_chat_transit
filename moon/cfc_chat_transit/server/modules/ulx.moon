@@ -1,3 +1,6 @@
+export Msg
+export _Msg = Msg
+
 import isstring from _G
 import Replace from string
 
@@ -11,6 +14,10 @@ ChatTransit.ReceiveULXAction = (msg) =>
             Type: "ulx_action"
             Content: msg
 
+M = (...) ->
+    _Msg ...
+    ChatTransit.ReceiveULXAction\ ...
+
 hook.Add "InitPostEntity", "ChatTransit_WrapUlxLog", ->
     return unless ulx
 
@@ -21,12 +28,8 @@ hook.Add "InitPostEntity", "ChatTransit_WrapUlxLog", ->
         -- If second param is a string, then it's safe to send to everyone
         return ulx._fancyLogAdmin(...) unless isstring args[2]
 
-        _G["_Msg"] or= Msg
-        Msg = (msg) ->
-            _G.Msg = _G._Msg
-            Msg msg
-            ChatTransit\ReceiveULXAction msg
+        Msg = M
 
         ulx._fancyLogAdmin ...
 
-        Msg = _G["_Msg"] if _G["_Msg"]
+        Msg = _Msg
