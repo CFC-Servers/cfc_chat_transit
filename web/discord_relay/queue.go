@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -38,7 +39,7 @@ const (
 	JOIN_EMOJI   = "<:green_cross_cir:654105378933571594>"
 	LEAVE_EMOJI  = "<:circle_red:855605697978957854>"
 	HALTED_EMOJI = "<:halted:398133588010336259>"
-	COP_EMOJI = "👮"
+	COP_EMOJI    = "👮"
 )
 
 var urlPattern = regexp.MustCompile(urlRegexString)
@@ -89,8 +90,8 @@ func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, 
 }
 
 func sendConnectMessage(discord *discordgo.Session, event EventStruct) {
-    steamLink := "https://steamid.io/lookup/" + event.Data.SteamId
-    message := "[Connected to the server](" + steamLink + ")"
+	steamLink := "https://steamid.io/lookup/" + event.Data.SteamId
+	message := "[Connected to the server](" + steamLink + ")"
 	sendEvent(discord, event, message, 0x009900, JOIN_EMOJI)
 }
 
@@ -99,15 +100,15 @@ func sendSpawnMessage(discord *discordgo.Session, event EventStruct) {
 }
 
 func sendDisconnectMessage(discord *discordgo.Session, event EventStruct) {
-    reason := event.Data.Reason
-    steamLink := "https://steamid.io/lookup/" + event.Data.SteamId
-    message := "[Disconnected from the server](" + steamLink + ")"
+	reason := event.Data.Reason
+	steamLink := "https://steamid.io/lookup/" + event.Data.SteamId
+	message := "[Disconnected from the server](" + steamLink + ")"
 
-    if strings.Contains(reason, "\n") {
-        message = message + "\n```" + reason + "\n```"
-    } else {
-        message = message + " (" + reason + ")"
-    }
+	if strings.Contains(reason, "\n") {
+		message = message + "\n```" + reason + "\n```"
+	} else {
+		message = message + " (" + reason + ")"
+	}
 
 	sendEvent(discord, event, message, 0x990000, LEAVE_EMOJI)
 }
@@ -117,7 +118,7 @@ func sendAnticrashMessage(discord *discordgo.Session, event EventStruct) {
 }
 
 func sendUlxAction(discord *discordgo.Session, event EventStruct) {
-	sendEvent(discord, event, event.Data.Messsage, 0xE7373E, COP_EMOJI)
+	sendEvent(discord, event, event.Data.Message, 0xE7373E, COP_EMOJI)
 }
 
 func queueGroomer() {
