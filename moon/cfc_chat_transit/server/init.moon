@@ -1,6 +1,7 @@
 require "gwsockets"
 require "logger"
 
+
 import Read from file
 import GetColor from team
 import TableToJSON from util
@@ -41,7 +42,9 @@ hook.Add "Think", loadHook, ->
 
 ChatTransit.Send = (data) =>
     logger\info "Sending '#{data.Type}'"
+
     data.Realm = @Realm\GetString!
+    data.Data.SteamId or= ""
 
     @WebSocket\write TableToJSON data
 

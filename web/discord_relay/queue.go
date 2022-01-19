@@ -14,8 +14,8 @@ import (
 var discord *discordgo.Session
 
 type EventStruct struct {
-	Type  string
 	Data  EventData
+	Type  string
 	Realm string
 }
 
@@ -36,10 +36,17 @@ var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
 const urlRegexString = `https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)`
 
 const (
-	JOIN_EMOJI   = "<:green_cross_cir:654105378933571594>"
-	LEAVE_EMOJI  = "<:circle_red:855605697978957854>"
-	HALTED_EMOJI = "<:halted:398133588010336259>"
-	COP_EMOJI    = "👮"
+	EMOJI_JOIN    = "<:green_cross_cir:654105378933571594>"
+	EMOJI_LEAVE   = "<:circle_red:855605697978957854>"
+	EMOJI_HALTED  = "<:halted:398133588010336259>"
+	EMOJI_CONNECT = "📡"
+	EMOJI_ULX     = "⌨️"
+
+	COLOR_RED    = 0xE7373E
+	COLOR_GREEN  = 0x37E73E
+	COLOR_ORANGE = 0xE78837
+	COLOR_BLUE   = 0x3796E7
+	COLOR_YELLOW = 0xE7E037
 )
 
 var urlPattern = regexp.MustCompile(urlRegexString)
@@ -49,7 +56,13 @@ func escapeUrl(message string) string {
 }
 
 func steamLinkMessage(event EventStruct, message string) string {
-	steamLink := "https://steamid.io/lookup/" + event.Data.SteamId
+	steamId := event.Data.SteamId
+
+	if steamId == "" {
+		return message
+	}
+
+	steamLink := "https://steamid.io/lookup/" + steamId
 	return "[" + message + "](" + steamLink + ")"
 }
 
@@ -96,12 +109,12 @@ func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, 
 
 func sendConnectMessage(discord *discordgo.Session, event EventStruct) {
 	message := steamLinkMessage(event, "Connected to the server")
-	sendEvent(discord, event, message, 0x009900, JOIN_EMOJI)
+	sendEvent(discord, event, message, COLOR_GREEN, EMOJI_CONNECT)
 }
 
 func sendSpawnMessage(discord *discordgo.Session, event EventStruct) {
 	message := steamLinkMessage(event, "Spawned in the server")
-	sendEvent(discord, event, message, 0x009900, JOIN_EMOJI)
+	sendEvent(discord, event, message, COLOR_GREEN, EMOJI_JOIN)
 }
 
 func sendDisconnectMessage(discord *discordgo.Session, event EventStruct) {
@@ -114,15 +127,15 @@ func sendDisconnectMessage(discord *discordgo.Session, event EventStruct) {
 		message = message + " (" + reason + ")"
 	}
 
-	sendEvent(discord, event, message, 0x990000, LEAVE_EMOJI)
+	sendEvent(discord, event, message, COLOR_ORANGE, EMOJI_LEAVE)
 }
 
 func sendAnticrashMessage(discord *discordgo.Session, event EventStruct) {
-	sendEvent(discord, event, event.Data.Content, 0xE7373E, HALTED_EMOJI)
+	sendEvent(discord, event, event.Data.Content, COLOR_RED, EMOJI_HALTED)
 }
 
 func sendUlxAction(discord *discordgo.Session, event EventStruct) {
-	sendEvent(discord, event, event.Data.Content, 0xE7373E, COP_EMOJI)
+	sendEvent(discord, event, event.Data.Content, COLOR_BLUE, EMOJI_ULX)
 }
 
 func queueGroomer() {
@@ -155,7 +168,7 @@ func queueGroomer() {
 		case "connect":
 			sendConnectMessage(discord, message)
 		case "spawn":
-			sendConnectMessage(discord, message)
+			sendSpawnMessage(discord, message)
 		case "disconnect":
 			sendDisconnectMessage(discord, message)
 		case "anticrash_event":
