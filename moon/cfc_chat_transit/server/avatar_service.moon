@@ -1,14 +1,12 @@
 import TableToJSON from util
 HTTP = HTTP
 
-AvatarServiceAddress = file.Read "cfc/avatar_service_address.txt", "DATA"
-AvatarServiceAddress = string.Replace AvatarServiceAddress, "\r", ""
-AvatarServiceAddress = string.Replace AvatarServiceAddress, "\n", ""
+avatarServiceAddress = CreateConVar "cfc_avatar_service_address", "", FCVAR_NONE
 
 class AvatarService
     new: (logger) =>
         @logger = logger\scope "AvatarService"
-        @outlinerUrl = "http://#{AvatarServiceAddress}/outline"
+        @outlinerUrl = "http://#{avatarServiceAddress\GetString!}/outline"
 
     processAvatar: (avatarUrl, outlineColor, success, failed) =>
         body = TableToJSON { :avatarUrl, :outlineColor }

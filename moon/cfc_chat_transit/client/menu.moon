@@ -1,13 +1,14 @@
+export ChatTransit
+
 alertPreference = (val) ->
     net.Start "CFC_ChatTransit_RemoteMessagePreference"
     net.WriteBool val
     net.SendToServer!
 
 initHookName = "CFC_ChatTransit_AlertRemoteMessagePreference"
-
 hook.Add "Think", initHookName, ->
     hook.Remove "Think", initHookName
-    alertPreference shouldReceiveRemoteMessages\GetBool!
+    alertPreference ChatTransit.shouldReceiveRemoteMessages\GetBool!
 
     return nil
 

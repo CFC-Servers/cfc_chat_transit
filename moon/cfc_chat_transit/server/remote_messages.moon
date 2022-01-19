@@ -1,11 +1,10 @@
+import IsValid from _G
 import AddNetworkString from util
 import Start, Receive, ReadBool, WriteColor, WriteString, Send from net
 import ToColor from string
 
 AddNetworkString "CFC_ChatTransit_RemoteMessagePreference"
 AddNetworkString "CFC_ChatTransit_RemoteMessageReceive"
-
-IsValid = IsValid
 
 recipients = RecipientFilter!
 adminRecipients = RecipientFilter!

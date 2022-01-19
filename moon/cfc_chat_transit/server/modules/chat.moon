@@ -3,7 +3,7 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     return unless text
     return if text == ""
 
-    avatar = ply.PlayerSummary.response.players[1].avatarfull
+    avatar = ply.SteamLookup.PlayerSummary.response.players[1].avatarfull
 
     @Send
         Type: "message"

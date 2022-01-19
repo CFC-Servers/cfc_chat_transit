@@ -1,5 +1,5 @@
 ChatTransit.PlayerDisconnected = (ply) =>
-    avatar = ply.PlayerSummary.response.players[1].avatarfull
+    avatar = ply.SteamLookup.PlayerSummary.response.players[1].avatarfull
 
     @Send
         Type: "disconnect"

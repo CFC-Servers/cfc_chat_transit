@@ -4,42 +4,43 @@ require "logger"
 import Read from file
 import GetColor from team
 import TableToJSON from util
-export ChatTransit = {}
-
-readClean = (fileName) ->
-    data = Read fileName, "DATA"
-    string.gsub data, "%s", ""
-
-RelayPort = readClean "cfc/cfc_relay_port.txt"
-RelayPassword = readClean "cfc/cfc_relay_password.txt"
-
-ChatTransit.Logger = Logger "CFC_ChatTransit"
-ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1:#{RelayPort}/relay"
-ChatTransit.Realm = CreateConVar "cfc_realm", "", FCVAR_NONE, "CFC Realm Name"
+export ChatTransit = {
+    Logger: Logger "ChatTransit"
+}
 
 logger = ChatTransit.Logger
+relayPort = CreateConVar "cfc_relay_port", "", FCVAR_NONE
 
-with ChatTransit.WebSocket
-    .reconnectTimerName = "CFC_ChatTransit_WebsocketReconnect"
+loadHook = "ChatTransit_WebsocketLoad"
+hook.Add "Think", loadHook, ->
+    hook.Remove "Think", loadHook
 
-    .onConnected = =>
-        logger\info "Established websocket connection"
-        timer.Remove .reconnectTimerName
+    ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1:#{relayPort\GetString!}/relay"
+    ChatTransit.Realm = CreateConVar "cfc_realm", "", FCVAR_NONE, "CFC Realm Name"
 
-    .onDisconnected = =>
-        logger\warn "Lost websocket connection!"
+    with ChatTransit.WebSocket
+        .reconnectTimerName = "CFC_ChatTransit_WebsocketReconnect"
 
-        if timer.Exists .reconnectTimerName
-            return logger\warn "Will retry #{timer.RepsLeft .reconnectTimerName} more times"
+        .onConnected = =>
+            logger\info "Established websocket connection"
+            timer.Remove .reconnectTimerName
 
-        timer.Create .reconnectTimerName, 2, 30, -> \open!
+        .onDisconnected = =>
+            logger\warn "Lost websocket connection!"
 
-    .onError = (message) => logger\error "Websocket Error!", message
+            if timer.Exists .reconnectTimerName
+                return logger\warn "Will retry #{timer.RepsLeft .reconnectTimerName} more times"
 
-    \open!
+            timer.Create .reconnectTimerName, 2, 30, -> \open!
+
+        .onError = (message) => logger\error "Websocket Error!", message
+
+        \open!
+
+    return nil
 
 ChatTransit.Send = (data) =>
-    @logger\info "Sending '#{data.Type}'"
+    logger\info "Sending '#{data.Type}'"
     data.Realm = @Realm\GetString!
 
     @WebSocket\write TableToJSON data
@@ -56,5 +57,5 @@ ChatTransit.GetTeamColor = (teamName) =>
 
 logger\info "Loading modules..."
 for f in *file.Find "cfc_chat_transit/server/modules/*.lua", "LUA"
-    logger\info "Loading #{f}"
-    include f
+    logger\info "Loading modules/#{f}"
+    include "modules/#{f}"

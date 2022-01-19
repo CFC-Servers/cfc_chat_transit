@@ -14,12 +14,12 @@ import (
 var discord *discordgo.Session
 
 type EventStruct struct {
-	Type string
-	Data EventData
+	Type  string
+	Data  EventData
+	Realm string
 }
 
 type EventData struct {
-	Realm     string
 	Type      string
 	Content   string
 	Avatar    string
@@ -68,7 +68,7 @@ func sendMessage(discord *discordgo.Session, message EventStruct) {
 	_, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
 
 	if err != nil {
-		log.Print(err)
+		log.Println(err)
 	}
 }
 
@@ -90,7 +90,7 @@ func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, 
 	_, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
 
 	if err != nil {
-		log.Print(err)
+		log.Println(err)
 	}
 }
 
@@ -128,18 +128,18 @@ func sendUlxAction(discord *discordgo.Session, event EventStruct) {
 func queueGroomer() {
 	discord, err := discordgo.New("")
 
-	log.Print(WebhookId, WebhookSecret)
+	log.Println(WebhookId, WebhookSecret)
 
 	if err != nil {
 		log.Fatal("error connecting:", err)
 		return
 	}
 
-	log.Print("Successfully connected to Discord")
+	log.Println("Successfully connected to Discord")
 
 	for {
 		rawMessage := <-MessageQueue
-		log.Print("Received message from queue: ", string(rawMessage))
+		log.Println("Received message from queue: ", string(rawMessage))
 		var message EventStruct
 
 		if err := json.Unmarshal(rawMessage, &message); err != nil {

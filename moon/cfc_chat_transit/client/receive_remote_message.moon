@@ -1,13 +1,17 @@
+export ChatTransit
 import AddToolCategory, AddToolMenuOption from spawnmenu
 
-shouldReceiveRemoteMessages = CreateConVar "cfc_chat_transit_remote_messages", 1, FCVAR_ARCHIVE, "Should receive remote messges in chat", 0, 1
+flags = FCVAR_ARCHIVE + FCVAR_USERINFO
+convarName = "cfc_chat_transit_remote_messages"
+convarDesc = "Should receive remote messages in chat"
+ChatTransit.shouldReceiveRemoteMessages = CreateConVar convarName, 1, flags, convarDesc, 0, 1
 
 colors =
     white: Color 255, 255, 255
     blurple: Color 142, 163, 247
 
 net.Receive "CFC_ChatTransit_RemoteMessageReceive", ->
-    return unless shouldReceiveRemoteMessages\GetBool!
+    return unless ChatTransit.shouldReceiveRemoteMessages\GetBool!
 
     author = net.ReadString!
     authorColor = net.ReadColor!
@@ -27,3 +31,5 @@ net.Receive "CFC_ChatTransit_RemoteMessageReceive", ->
     hook.Run "CFC_ChatTransit_RemoteMessageReceive", addTextParams
 
     chat.AddText unpack addTextParams
+
+print "Loaded receive remote messages"
