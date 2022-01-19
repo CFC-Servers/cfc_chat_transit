@@ -12,8 +12,10 @@ ChatTransit.PlayerInitialSpawn = (ply) =>
         if attempts >= 5
             @Logger\warn "PlayerSummary didn't exist in time to send an on-spawn message"
         else
-            if ply.PlayerSummary
-                avatar = ply.PlayerSummary.response.players[1].avatarfull
+            summary = ply.SteamLookup and ply.SteamLookup.PlayerSummary
+
+            if summary
+                avatar = summary.response.players[1].avatarfull
             else
                 return timer.Simple 2 + attempts, -> sendMessage(attempts + 1)
 
