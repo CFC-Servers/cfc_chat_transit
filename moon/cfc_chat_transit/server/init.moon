@@ -57,6 +57,14 @@ ChatTransit.GetTeamColor = (teamName) =>
 
     teamColor
 
+ChatTransit.guard = (f) -> (...) ->
+    args = {...}
+
+    success, err = pcall -> f unpack args
+    ErrorNoHaltWithStack err unless success
+
+    return nil
+
 logger\info "Loading modules..."
 for f in *file.Find "cfc_chat_transit/server/modules/*.lua", "LUA"
     logger\info "Loading modules/#{f}"

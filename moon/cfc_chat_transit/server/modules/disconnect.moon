@@ -1,3 +1,4 @@
+import guard from ChatTransit
 import GetBySteamID from player
 import SteamIDTo64 from util
 
@@ -18,4 +19,4 @@ ChatTransit.PlayerDisconnected = (data) =>
             Content: reason
 
 gameevent.Listen "player_disconnect"
-hook.Add "player_disconnect", "CFC_ChatTransit_DisconnectListener", ChatTransit\PlayerDisconnected
+hook.Add "player_disconnect", "CFC_ChatTransit_DisconnectListener", guard ChatTransit\PlayerDisconnected
