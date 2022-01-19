@@ -1,7 +1,6 @@
 require "gwsockets"
 require "logger"
 
-
 import Read from file
 import GetColor from team
 import TableToJSON from util
