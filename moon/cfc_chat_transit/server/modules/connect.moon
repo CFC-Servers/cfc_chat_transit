@@ -1,3 +1,4 @@
+import guard from ChatTransit
 -- TODO: Send a preliminary avatarservice link that will be backfilled when they fully connect
 
 ChatTransit.PlayerConnect = (data) =>
@@ -36,5 +37,5 @@ ChatTransit.PlayerInitialSpawn = (ply) =>
     sendMessage!
 
 gameevent.Listen "player_connect"
-hook.Add "player_connect", "CFC_ChatTransit_SpawnListener", ChatTransit\PlayerConnect
-hook.Add "PlayerInitialSpawn", "CFC_ChatTransit_SpawnListener", ChatTransit\PlayerInitialSpawn
+hook.Add "player_connect", "CFC_ChatTransit_SpawnListener", guard ChatTransit\PlayerConnect
+hook.Add "PlayerInitialSpawn", "CFC_ChatTransit_SpawnListener", guard ChatTransit\PlayerInitialSpawn

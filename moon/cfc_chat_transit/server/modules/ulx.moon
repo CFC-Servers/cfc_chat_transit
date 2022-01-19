@@ -1,6 +1,7 @@
 export Msg
 export _Msg = Msg
 
+import guard from ChatTransit
 import isstring from _G
 import Replace from string
 
@@ -18,7 +19,7 @@ M = (...) ->
     _Msg ...
     ChatTransit\ReceiveULXAction ...
 
-hook.Add "InitPostEntity", "ChatTransit_WrapUlxLog", ->
+hook.Add "InitPostEntity", "ChatTransit_WrapUlxLog", guard ->
     return unless ulx
 
     ulx._fancyLogAdmin or= ulx.fancyLogAdmin

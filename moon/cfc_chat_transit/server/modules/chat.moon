@@ -1,3 +1,5 @@
+import guard from ChatTransit
+
 ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     return if teamChat
     return unless text
@@ -15,4 +17,4 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
             SteamId: ply\SteamID64!
             IrisId: "none"
 
-hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", ChatTransit\ReceiveMessage, HOOK_MONITOR_LOW
+hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", guard(ChatTransit\ReceiveMessage), HOOK_MONITOR_LOW

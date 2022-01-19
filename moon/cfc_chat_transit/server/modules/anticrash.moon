@@ -1,3 +1,4 @@
+import guard from ChatTransit
 import isstring from _G
 
 ChatTransit.AnticrashEvent = (eventText) =>
@@ -10,6 +11,6 @@ ChatTransit.AnticrashEvent = (eventText) =>
             SteamName: "CFC Anticrash"
             Avatar: ""
 
-hook.Add "z_anticrash_LagDetect", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
-hook.Add "z_anticrash_LagStuck", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
-hook.Add "z_anticrash_CrashPrevented", "CFC_ChatTransit_AnticrashEventListener", ChatTransit\AnticrashEvent
+hook.Add "z_anticrash_LagDetect", "CFC_ChatTransit_AnticrashEventListener", guard ChatTransit\AnticrashEvent
+hook.Add "z_anticrash_LagStuck", "CFC_ChatTransit_AnticrashEventListener", guard ChatTransit\AnticrashEvent
+hook.Add "z_anticrash_CrashPrevented", "CFC_ChatTransit_AnticrashEventListener", guard ChatTransit\AnticrashEvent
