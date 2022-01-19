@@ -1,8 +1,15 @@
-ChatTransit.PlayerAuthed = (ply, steamId) =>
+-- TODO: Send a preliminary avatarservice link that will be backfilled when they fully connect
+
+ChatTransit.PlayerConnect = (data) =>
+    :bot, :name, networkid: steamId = data
+
+    bot = tobool bot
+    steamId = nil if bot
+
     @Send
         Type: "connect"
         Data:
-            SteamName: ply\Nick!
+            SteamName: name
             SteamId: steamId
 
 ChatTransit.PlayerInitialSpawn = (ply) =>
@@ -28,5 +35,6 @@ ChatTransit.PlayerInitialSpawn = (ply) =>
 
     sendMessage!
 
-hook.Add "PlayerAuthed", "CFC_ChatTransit_SpawnListener", ChatTransit\PlayerAuthed
+gameevent.Listen "player_connect"
+hook.Add "player_connect", "CFC_ChatTransit_SpawnListener", ChatTransit\PlayerConnect
 hook.Add "PlayerInitialSpawn", "CFC_ChatTransit_SpawnListener", ChatTransit\PlayerInitialSpawn
