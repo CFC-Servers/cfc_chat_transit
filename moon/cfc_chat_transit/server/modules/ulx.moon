@@ -22,15 +22,15 @@ M = (...) ->
 hook.Add "InitPostEntity", "ChatTransit_WrapUlxLog", guard ->
     return unless ulx
 
-    ulx._fancyLogAdmin or= ulx.fancyLogAdmin
+    ulx._ChatTransit_fancyLogAdmin or= ulx.fancyLogAdmin
     ulx.fancyLogAdmin = (...) ->
         args = { ... }
 
         -- If second param is a string, then it's safe to send to everyone
-        return ulx._fancyLogAdmin(...) unless isstring args[2]
+        return ulx._ChatTransit_fancyLogAdmin(...) unless isstring args[2]
 
         Msg = M
 
-        ulx._fancyLogAdmin ...
+        ulx._ChatTransit_fancyLogAdmin ...
 
         Msg = _Msg
