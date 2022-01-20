@@ -5,15 +5,11 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
     return unless text
     return if text == ""
 
-    summary = ply.SteamLookup and ply.SteamLookup.PlayerSummary
-    avatar = summary and summary.response.players[1].avatarfull
-
     @Send
         Type: "message"
         Data:
             Type: "message"
             Content: text
-            Avatar: avatar
             SteamName: ply\Nick!
             SteamId: ply\SteamID64!
             IrisId: "none"

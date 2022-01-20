@@ -7,6 +7,7 @@ services:
     volumes:
       - ./avatars.conf:/etc/nginx/nginx.conf
       - "$AVATARS_DIR:/usr/share/nginx/html/avatars"
+      - ./default.png:/usr/share/nginx/html/avatars/default.png
 
   service:
     build:

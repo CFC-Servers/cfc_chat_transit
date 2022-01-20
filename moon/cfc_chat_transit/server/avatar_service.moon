@@ -8,10 +8,16 @@ class AvatarService
         @logger = logger\scope "AvatarService"
         @outlinerUrl = "http://#{avatarServiceAddress\GetString!}/outline"
 
-    processAvatar: (avatarUrl, outlineColor, success, failed) =>
-        body = TableToJSON { :avatarUrl, :outlineColor }
+    getAvatar: (steamID64) =>
+        steamID64 and "https://avatarservice.cfcservers.org/avatars/#{steamID64}.png" or nil
 
+    processAvatar: (avatarUrl, outlineColor, steamID) =>
+        body = TableToJSON { :avatarUrl, :outlineColor, :steamID }
         @logger\debug "Sending data to outliner: ", body
+
+        failed = @logger\error
+        success = (code, body) ->
+            @logger\debug "Avatar request succeeded with code: #{code} | Body: #{body}"
 
         HTTP
             :success
@@ -21,24 +27,13 @@ class AvatarService
             method: "POST"
             type: "application/json"
 
-    setOutlinedAvatar: (ply, avatarUrl) =>
-        data = ply.SteamLookup.PlayerSummary.response.players[1]
-
-        data.originalAvatarFull or= data.avatarfull
-        data.avatarfull = avatarUrl
-
     outlineAvatar: (ply, data) =>
         @logger\debug "Received request to outline avatar for ply: #{ply\Nick!}"
         avatar = data.response.players[1].avatarfull
         outlineColor = ChatTransit\GetTeamColor ply\Team!
+        steamID = ply\SteamID64!
 
-        success = (code, body) ->
-            @logger\debug "Avatar request succeeded with code: #{code} | Body: #{body}"
-            @setOutlinedAvatar ply, body
-
-        failed = (err) -> @logger\error err
-
-        @processAvatar avatar, outlineColor, success, failed
+        @processAvatar avatar, outlineColor, steamID
 
 ChatTransit.AvatarService = AvatarService ChatTransit.Logger
 
