@@ -39,6 +39,8 @@ const (
 	EMOJI_JOIN    = "<:green_cross_cir:654105378933571594>"
 	EMOJI_LEAVE   = "<:circle_red:855605697978957854>"
 	EMOJI_HALTED  = "<:halted:398133588010336259>"
+	EMOJI_BUILD   = "<:build:933512140395012107>"
+	EMOJI_PVP     = "<:bk:812130062379515906>"
 	EMOJI_CONNECT = "📡"
 	EMOJI_ULX     = "⌨️"
 
@@ -124,7 +126,13 @@ func sendDisconnectMessage(discord *discordgo.Session, event EventStruct) {
 	if strings.Contains(reason, "\n") {
 		message = message + "\n```" + reason + "\n```"
 	} else {
-		message = message + " (" + reason + ")"
+		reasonPrefix := " "
+		if len(reason) > 35 {
+			reasonPrefix = "\n "
+		}
+
+		reason = reasonPrefix + "(" + reason + ")"
+		message = message + reason
 	}
 
 	sendEvent(discord, event, message, COLOR_ORANGE, EMOJI_LEAVE)
@@ -136,6 +144,23 @@ func sendAnticrashMessage(discord *discordgo.Session, event EventStruct) {
 
 func sendUlxAction(discord *discordgo.Session, event EventStruct) {
 	sendEvent(discord, event, event.Data.Content, COLOR_BLUE, EMOJI_ULX)
+}
+
+func sendPvpStatusChange(discord *discordgo.Session, event EventStruct) {
+	var emoji string
+	var color int
+
+	content := event.Data.Content
+
+	if strings.HasSuffix(content, "PvP mode") {
+		emoji = EMOJI_PVP
+		color = COLOR_RED
+	} else if strings.HasSuffix(content, "Build mode") {
+		emoji = EMOJI_BUILD
+		color = COLOR_BLUE
+	}
+
+	sendEvent(discord, event, event.Data.Content, color, emoji)
 }
 
 func queueGroomer() {
@@ -175,6 +200,8 @@ func queueGroomer() {
 			sendAnticrashMessage(discord, message)
 		case "ulx_action":
 			sendUlxAction(discord, message)
+		case "pvp_status_change":
+			sendPvpStatusChange(discord, message)
 		}
 	}
 }

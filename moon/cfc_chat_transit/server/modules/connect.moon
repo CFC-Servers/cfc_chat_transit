@@ -25,7 +25,8 @@ ChatTransit.PlayerInitialSpawn = (ply) =>
             if summary
                 avatar = summary.response.players[1].avatarfull
             else
-                return timer.Simple 2 + attempts, -> sendMessage(attempts + 1)
+                delay = 2 + ( attempts * 2 )
+                return timer.Simple delay, -> sendMessage attempts + 1
 
         @Send
             Type: "spawn"
