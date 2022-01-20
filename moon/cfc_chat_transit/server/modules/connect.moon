@@ -1,4 +1,5 @@
 import guard from ChatTransit
+import SteamIDTo64 from util
 -- TODO: Send a preliminary avatarservice link that will be backfilled when they fully connect
 
 ChatTransit.PlayerConnect = (data) =>
@@ -11,7 +12,7 @@ ChatTransit.PlayerConnect = (data) =>
         Type: "connect"
         Data:
             SteamName: name
-            SteamId: steamId
+            SteamId: SteamIDTo64 steamId if steamId
 
 ChatTransit.PlayerInitialSpawn = (ply) =>
     sendMessage = (attempts=1) ->
