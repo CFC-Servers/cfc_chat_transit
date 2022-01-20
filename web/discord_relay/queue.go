@@ -126,12 +126,11 @@ func sendDisconnectMessage(discord *discordgo.Session, event EventStruct) {
 	if strings.Contains(reason, "\n") {
 		message = message + "\n```" + reason + "\n```"
 	} else {
-		reasonPrefix := " "
 		if len(reason) > 35 {
-			reasonPrefix = "\n "
+			message = message + "\n"
 		}
 
-		reason = reasonPrefix + "(" + reason + ")"
+		reason = " (" + reason + ")"
 		message = message + reason
 	}
 
