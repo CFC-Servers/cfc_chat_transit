@@ -8,5 +8,5 @@ ChatTransit.PvPEvent = (ply, newMode) =>
         Data:
             Content: eventText
 
-hook.Add "CFC_PvP_PlayerEnterPvp", "CFC_ChatTransit_Relay", guard (ply) -> ChatTransit\PvPEvent "PvP"
-hook.Add "CFC_PvP_PlayerExitPvp", "CFC_ChatTransit_Relay", guard (ply) -> ChatTransit\PvPEvent "Build"
+hook.Add "CFC_PvP_PlayerEnterPvp", "CFC_ChatTransit_Relay", guard (ply) -> ChatTransit\PvPEvent ply, "PvP"
+hook.Add "CFC_PvP_PlayerExitPvp", "CFC_ChatTransit_Relay", guard (ply) -> ChatTransit\PvPEvent ply, "Build"
