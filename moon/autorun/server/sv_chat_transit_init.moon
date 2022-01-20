@@ -1,7 +1,6 @@
 require "steamlookup"
 
 include "cfc_chat_transit/server/init.lua"
-include "cfc_chat_transit/server/avatar_service.lua"
 include "cfc_chat_transit/server/remote_messages.lua"
 
 AddCSLuaFile "cfc_chat_transit/client/init.lua"

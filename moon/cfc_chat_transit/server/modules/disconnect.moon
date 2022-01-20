@@ -7,13 +7,9 @@ ChatTransit.PlayerDisconnected = (data) =>
 
     ply = GetBySteamID steamId
 
-    summary = ply and ply.SteamLookup and ply.SteamLookup.PlayerSummary
-    avatar = summary and summary.response.players[1].avatarfull
-
     @Send
         Type: "disconnect"
         Data:
-            Avatar: avatar
             SteamName: ply and ply\Nick! or name
             SteamId: ply and ply\SteamID64! or SteamIDTo64 steamId
             Content: reason

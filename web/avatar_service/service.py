@@ -13,12 +13,9 @@ base_url = os.getenv("AVATAR_SERVICE_URL")
 @app.route("/outline", methods=["POST"])
 def outline() -> str:
     content = request.json
-    image_url = content["avatarUrl"]
+    steam_id = content["steamid"]
 
-    image_name = image_url.split("/")[-1]  # "example.jpg"
-    image_name = image_name.split(".")[0]  # "example"
-
-    avatar_path = f"/avatars/{image_name}.png"
+    avatar_path = f"/avatars/{steam_id}.png"
 
     if os.path.isfile(avatar_path):
         os.remove(avatar_path)
@@ -28,6 +25,7 @@ def outline() -> str:
     outline_color = [int(c) for c in outline_color]  # [255, 255, 255, 255]
     outline_color = tuple(outline_color)  # (255, 255, 255, 255)
 
+    image_url = content["avatarUrl"]
     raw_image = requests.get(image_url, stream=True).raw
     avatar = Image.open(raw_image).convert("RGB")
 

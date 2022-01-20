@@ -1,12 +1,13 @@
 require "gwsockets"
 require "logger"
 
+export ChatTransit = { Logger: Logger "ChatTransit" }
+include "cfc_chat_transit/server/avatar_service.lua"
+
 import Read from file
 import GetColor from team
 import TableToJSON from util
-export ChatTransit = {
-    Logger: Logger "ChatTransit"
-}
+import getAvatar from ChatTransit.AvatarService
 
 logger = ChatTransit.Logger
 relayPort = CreateConVar "cfc_relay_port", "", FCVAR_NONE
@@ -41,7 +42,9 @@ hook.Add "Think", loadHook, ->
 
 ChatTransit.Send = (data) =>
     logger\info "Sending '#{data.Type}'"
+    steamID = data.Data.SteamId
 
+    data.Data.Avatar or= getAvatar steamID
     data.Realm = @Realm\GetString!
     data.Data.SteamId or= ""
 
