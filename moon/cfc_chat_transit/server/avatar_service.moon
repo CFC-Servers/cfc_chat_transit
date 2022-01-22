@@ -8,7 +8,7 @@ class AvatarService
         @logger = logger\scope "AvatarService"
         @outlinerUrl = "http://#{avatarServiceAddress\GetString!}/outline"
 
-    getAvatar: (steamID64) =>
+    getAvatar: (steamID64) ->
         steamID64 and "https://avatarservice.cfcservers.org/avatars/#{steamID64}.png" or nil
 
     processAvatar: (avatarUrl, outlineColor, steamID) =>
