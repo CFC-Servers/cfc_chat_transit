@@ -41,7 +41,7 @@ hook.Add "CFC_SteamLookup_SuccessfulPlayerData", "CFC_ChatTransit_AvatarService"
     return unless dataName == "PlayerSummary"
     return unless data
 
-    success, err pcall -> ChatTransit.AvatarService\outlineAvatar ply, data
+    success, err = pcall -> ChatTransit.AvatarService\outlineAvatar ply, data
     ErrorNoHaltWithStack err, dataName, ply unless success
 
     return nil
