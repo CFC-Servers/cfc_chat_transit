@@ -1,4 +1,7 @@
 ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
+    shouldRelay = hook.Run "CFC_ChatTransit_ShouldRelayChatMessage", ply, text, teamChat
+    return if shouldRelay == false
+    
     return if teamChat
     return unless text
     return if text == ""
