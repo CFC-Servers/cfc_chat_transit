@@ -7,7 +7,6 @@ include "cfc_chat_transit/server/avatar_service.lua"
 import Read from file
 import GetColor from team
 import TableToJSON from util
-import getAvatar from ChatTransit.AvatarService
 
 logger = ChatTransit.Logger
 relayPort = CreateConVar "cfc_relay_port", "", FCVAR_NONE
@@ -44,7 +43,7 @@ ChatTransit.Send = (data) =>
     logger\info "Sending '#{data.Type}'"
     steamID = data.Data.SteamId
 
-    data.Data.Avatar or= getAvatar steamID
+    data.Data.Avatar or= ChatTransit.AvatarService.getAvatar steamID
     data.Realm = @Realm\GetString!
     data.Data.SteamId or= ""
 

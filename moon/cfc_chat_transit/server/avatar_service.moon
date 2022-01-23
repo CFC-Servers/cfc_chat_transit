@@ -35,7 +35,8 @@ class AvatarService
 
         @processAvatar avatar, outlineColor, steamID
 
-ChatTransit.AvatarService = AvatarService ChatTransit.Logger
+hook.Add "InitPostEntity", "CFC_ChatTrahsit_AvatarServiceInit", ->
+    ChatTransit.AvatarService = AvatarService ChatTransit.Logger
 
 hook.Add "CFC_SteamLookup_SuccessfulPlayerData", "CFC_ChatTransit_AvatarService", (dataName, ply, data) ->
     return unless dataName == "PlayerSummary"
