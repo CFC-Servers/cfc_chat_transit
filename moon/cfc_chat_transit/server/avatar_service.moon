@@ -1,7 +1,7 @@
 import TableToJSON from util
 HTTP = HTTP
 
-avatarServiceAddress = CreateConVar "cfc_avatar_service_address", "", FCVAR_NONE
+avatarServiceAddress = CreateConVar "cfc_avatar_service_address", "", FCVAR_ARCHIVE + FCVAR_PROTECTED
 
 class AvatarService
     new: (logger) =>
