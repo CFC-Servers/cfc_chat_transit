@@ -4,15 +4,15 @@ HTTP = HTTP
 avatarServiceAddress = CreateConVar "cfc_avatar_service_address", "", FCVAR_ARCHIVE + FCVAR_PROTECTED
 
 class AvatarService
-    @processedIds = {}
 
     new: (logger) =>
         @logger = logger\scope "AvatarService"
         @outlinerUrl = "http://#{avatarServiceAddress\GetString!}/outline"
+        @processedIds = {}
 
-    getAvatar: (steamID64) ->
+    getAvatar: (steamID64) =>
         url = steamID64 and "https://avatarservice.cfcservers.org/avatars/#{steamID64}.png" or nil
-        url and= "#{url}?processed=true" if @@processedIds[steamID64]
+        url and= "#{url}?processed=true" if @processedIds[steamID64]
 
         return url
 
@@ -23,7 +23,7 @@ class AvatarService
         failed = @logger\error
         success = (code, body) ->
             @logger\info "Avatar request succeeded with code: #{code} | Body: #{body}"
-            @@processedIds[steamID64] = true
+            @processedIds[steamID64] = true
 
         HTTP
             :success

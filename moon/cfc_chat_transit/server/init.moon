@@ -41,9 +41,9 @@ hook.Add "Think", loadHook, ->
 
 ChatTransit.Send = (data) =>
     logger\info "Sending '#{data.Type}'"
-    steamID = data.Data.SteamId
+    steamID64 = data.Data.SteamId
 
-    data.Data.Avatar or= ChatTransit.AvatarService.getAvatar steamID
+    data.Data.Avatar or= ChatTransit.AvatarService\getAvatar steamID64
     data.Realm = @Realm\GetString!
     data.Data.SteamId or= ""
 
