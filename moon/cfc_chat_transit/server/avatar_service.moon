@@ -4,20 +4,26 @@ HTTP = HTTP
 avatarServiceAddress = CreateConVar "cfc_avatar_service_address", "", FCVAR_ARCHIVE + FCVAR_PROTECTED
 
 class AvatarService
+    @processedIds = {}
+
     new: (logger) =>
         @logger = logger\scope "AvatarService"
         @outlinerUrl = "http://#{avatarServiceAddress\GetString!}/outline"
 
     getAvatar: (steamID64) ->
-        steamID64 and "https://avatarservice.cfcservers.org/avatars/#{steamID64}.png" or nil
+        url = steamID64 and "https://avatarservice.cfcservers.org/avatars/#{steamID64}.png" or nil
+        url and= "#{url}#bust" if @@processedIds[steamID64]
 
-    processAvatar: (avatarUrl, outlineColor, steamID) =>
-        body = TableToJSON { :avatarUrl, :outlineColor, :steamID }
+        return url
+
+    processAvatar: (avatarUrl, outlineColor, steamID64) =>
+        body = TableToJSON { :avatarUrl, :outlineColor, steamID: steamID64 }
         @logger\info "Sending data to outliner: ", body
 
         failed = @logger\error
         success = (code, body) ->
             @logger\info "Avatar request succeeded with code: #{code} | Body: #{body}"
+            @@processedIds[steamID64] = true
 
         HTTP
             :success
@@ -31,9 +37,9 @@ class AvatarService
         @logger\info "Received request to outline avatar for ply: #{ply\Nick!}"
         avatar = data.response.players[1].avatarfull
         outlineColor = ChatTransit\GetTeamColor ply\Team!
-        steamID = ply\SteamID64!
+        steamID64 = ply\SteamID64!
 
-        @processAvatar avatar, outlineColor, steamID
+        @processAvatar avatar, outlineColor, steamID64
 
 hook.Add "InitPostEntity", "CFC_ChatTrahsit_AvatarServiceInit", ->
     ChatTransit.AvatarService = AvatarService ChatTransit.Logger
