@@ -12,7 +12,7 @@ class AvatarService
 
     getAvatar: (steamID64) ->
         url = steamID64 and "https://avatarservice.cfcservers.org/avatars/#{steamID64}.png" or nil
-        url and= "#{url}#bust" if @@processedIds[steamID64]
+        url and= "#{url}?processed=true" if @@processedIds[steamID64]
 
         return url
 
