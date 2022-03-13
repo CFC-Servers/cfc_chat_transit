@@ -1,6 +1,5 @@
 import IsValid from _G
 import AddNetworkString from util
-import Start, Receive, ReadBool, WriteColor, WriteString, Send from net
 import ToColor from string
 
 AddNetworkString "CFC_ChatTransit_RemoteMessagePreference"
@@ -13,8 +12,8 @@ shouldTransmit = CreateConVar "cfc_chat_transit_should_transmit_remote", 1, FCVA
 adminOnly = CreateConVar "cfc_chat_transit_transmit_admin_only", 1, FCVAR_ARCHIVE, "Should only transmit to Admins?", 0, 1
 
 -- TODO: Handle rank changes (to/from Admin)
-Receive "CFC_ChatTransit_RemoteMessagePreference", (_, ply) ->
-    shouldReceive = ReadBool!
+net.Receive "CFC_ChatTransit_RemoteMessagePreference", (_, ply) ->
+    shouldReceive = net.ReadBool!
 
     if shouldReceive
         recipients\AddPlayer ply
@@ -33,20 +32,28 @@ broadcastMessage = (ply, cmd, args, argStr) ->
     return if IsValid ply
 
     author = rawget args, 1
-    authorColor = rawget args, 2
-    message = rawget args, 3
-
     return unless author
+
+    authorColor = rawget args, 2
     return unless authorColor
+
+    message = rawget args, 3
     return unless message
 
-    authorColor = ToColor authorColor
-    sendingTo = adminOnly\GetBool! and adminRecipients or recipients
+    data = {
+        :author,
+        :message,
+        authorColor: ToColor authorColor
+        sendingTo: adminOnly\GetBool! and adminRecipients or recipients
+    }
 
-    Start "CFC_ChatTransit_RemoteMessageReceive"
-    WriteString author
-    WriteColor authorColor
-    WriteString message
-    Send sendingTo
+    result = hook.Run "CFC_ChatTransit_PreRelayRemoteMessage", data
+    return if result == false
+
+    net.Start "CFC_ChatTransit_RemoteMessageReceive"
+    net.WriteString data.author
+    net.WriteColor data.authorColor
+    net.WriteString data.message
+    net.Send data.sendingTo
 
 concommand.Add "chat_transit", broadcastMessage
