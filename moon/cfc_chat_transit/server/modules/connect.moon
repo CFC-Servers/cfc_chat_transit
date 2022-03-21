@@ -14,7 +14,8 @@ ChatTransit.PlayerConnect = (data) =>
             SteamName: name
             SteamId: SteamIDTo64 steamId if steamId
 
-ChatTransit.PlayerInitialSpawn = (ply) =>
+ChatTransit.PlayerInitialSpawn = (ply,mapTransition) =>
+    return if mapTransition
     @Send
         Type: "spawn"
         Data:
