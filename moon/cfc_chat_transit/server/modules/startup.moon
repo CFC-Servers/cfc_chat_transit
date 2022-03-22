@@ -1,7 +1,7 @@
 import guard from ChatTransit
 import GetMap from game
 
-ChatTransit.Initialize = (data) =>
+ChatTransit.MapStartup = (data) =>
     eventText = ""
     map = GetMap!
 
@@ -13,6 +13,6 @@ ChatTransit.Initialize = (data) =>
     @Send
         Type: "map_init"
         Data:
-            eventText: GetMap!
+            Content: eventText
 
-hook.Add "Initialize", "CFC_ChatTransit_StartListener", guard ChatTransit\Initialize
+hook.Add "Initialize", "CFC_ChatTransit_StartListener", guard ChatTransit\MapStartup
