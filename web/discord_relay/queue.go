@@ -41,6 +41,7 @@ const (
 	EMOJI_HALTED  = "<:halted:398133588010336259>"
 	EMOJI_BUILD   = "<:build:933512140395012107>"
 	EMOJI_PVP     = "<:bk:812130062379515906>"
+	EMOJI_MAP     = "📊"
 	EMOJI_CONNECT = "📡"
 	EMOJI_ULX     = "⌨️"
 
@@ -137,6 +138,10 @@ func sendDisconnectMessage(discord *discordgo.Session, event EventStruct) {
 	sendEvent(discord, event, message, COLOR_ORANGE, EMOJI_LEAVE)
 }
 
+func sendMapMessage(discord *discordgo.Session, event EventStruct) {
+	sendEvent(discord, event, event.Data.Content, COLOR_GREEN, EMOJI_MAP)
+}
+
 func sendAnticrashMessage(discord *discordgo.Session, event EventStruct) {
 	sendEvent(discord, event, event.Data.Content, COLOR_RED, EMOJI_HALTED)
 }
@@ -195,6 +200,8 @@ func queueGroomer() {
 			sendSpawnMessage(discord, message)
 		case "disconnect":
 			sendDisconnectMessage(discord, message)
+		case "map_init":
+			sendMapMessage(discord, message)
 		case "anticrash_event":
 			sendAnticrashMessage(discord, message)
 		case "ulx_action":
