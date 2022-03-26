@@ -41,7 +41,7 @@ const (
 	EMOJI_HALTED  = "<:halted:398133588010336259>"
 	EMOJI_BUILD   = "<:build:933512140395012107>"
 	EMOJI_PVP     = "<:bk:812130062379515906>"
-	EMOJI_MAP     = "📊"
+	EMOJI_MAP     = "🗺️"
 	EMOJI_CONNECT = "📡"
 	EMOJI_ULX     = "⌨️"
 
