@@ -111,7 +111,8 @@ func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, 
 }
 
 func sendConnectMessage(discord *discordgo.Session, event EventStruct) {
-	message := steamLinkMessage(event, "Connected to the server")
+	message := steamLinkMessage(event, "Connected to the server ")
+	message = message + event.Data.PlayerCountCurrent + "/" + event.Data.PlayerCountMax
 	sendEvent(discord, event, message, COLOR_GREEN, EMOJI_CONNECT)
 }
 
@@ -122,7 +123,8 @@ func sendSpawnMessage(discord *discordgo.Session, event EventStruct) {
 
 func sendDisconnectMessage(discord *discordgo.Session, event EventStruct) {
 	reason := event.Data.Content
-	message := steamLinkMessage(event, "Disconnected from the server")
+	message := steamLinkMessage(event, "Disconnected from the server ")
+	message = message + event.Data.PlayerCountCurrent + "/" + event.Data.PlayerCountMax + " "
 
 	if strings.Contains(reason, "\n") {
 		message = message + "\n```" + reason + "\n```"
