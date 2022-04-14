@@ -20,12 +20,14 @@ type EventStruct struct {
 }
 
 type EventData struct {
-	Type      string
-	Content   string
-	Avatar    string
-	SteamName string
-	SteamId   string
-	IrisId    string
+	Type               string
+	Content            string
+	Avatar             string
+	SteamName          string
+	SteamId            string
+	IrisId             string
+	PlayerCountMax     string
+	PlayerCountCurrent string
 }
 
 var MessageQueue = make(chan []byte, 100)
