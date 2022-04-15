@@ -26,8 +26,8 @@ type EventData struct {
 	SteamName          string
 	SteamId            string
 	IrisId             string
-	PlayerCountMax     int
-	PlayerCountCurrent int
+	PlayerCountMax     float32
+	PlayerCountCurrent float32
 }
 
 var MessageQueue = make(chan []byte, 100)
@@ -114,7 +114,7 @@ func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, 
 
 func sendConnectMessage(discord *discordgo.Session, event EventStruct) {
 	message := steamLinkMessage(event, "Connected to the server")
-	message = message + fmt.Sprintf("%d/%d", event.Data.PlayerCountCurrent, event.Data.PlayerCountMax)
+	message = message + fmt.Sprintf("%v/%v", event.Data.PlayerCountCurrent, event.Data.PlayerCountMax)
 	sendEvent(discord, event, message, COLOR_GREEN, EMOJI_CONNECT)
 }
 
@@ -126,7 +126,7 @@ func sendSpawnMessage(discord *discordgo.Session, event EventStruct) {
 func sendDisconnectMessage(discord *discordgo.Session, event EventStruct) {
 	reason := event.Data.Content
 	message := steamLinkMessage(event, "Disconnected from the server")
-	message = message + fmt.Sprintf(" %d/%d", event.Data.PlayerCountCurrent, event.Data.PlayerCountMax)
+	message = message + fmt.Sprintf(" %v/%v", event.Data.PlayerCountCurrent, event.Data.PlayerCountMax)
 
 	if strings.Contains(reason, "\n") {
 		message = message + "\n```" + reason + "\n```"
