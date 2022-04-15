@@ -12,7 +12,7 @@ ChatTransit.PlayerConnect = (data) =>
         Type: "connect"
         Data:
             SteamName: name
-            SteamId: SteamIDTo64 steamId if steamId
+            SteamId: steamId and SteamIDTo64 steamId
             PlayerCountCurrent: player\GetCount!
             PlayerCountMax: game\MaxPlayers!
 
