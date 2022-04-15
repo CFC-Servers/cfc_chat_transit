@@ -11,10 +11,10 @@ ChatTransit.PlayerConnect = (data) =>
     @Send
         Type: "connect"
         Data:
-            SteamName: name
-            SteamId: SteamIDTo64 steamId if steamId
             PlayerCountCurrent: player\GetCount!
             PlayerCountMax: game\MaxPlayers!
+            SteamName: name
+            SteamId: SteamIDTo64 steamId if steamId
 
 ChatTransit.PlayerInitialSpawn = (ply) =>
     @Send
