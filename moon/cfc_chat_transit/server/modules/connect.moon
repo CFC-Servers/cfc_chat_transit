@@ -13,6 +13,8 @@ ChatTransit.PlayerConnect = (data) =>
         Data:
             SteamName: name
             SteamId: SteamIDTo64 steamId if steamId
+            PlayerCountCurrent: player\GetCount!
+            PlayerCountMax: game\MaxPlayers!
 
 ChatTransit.PlayerInitialSpawn = (ply) =>
     @Send
@@ -20,8 +22,6 @@ ChatTransit.PlayerInitialSpawn = (ply) =>
         Data:
             SteamName: ply\Nick!
             SteamId: ply\SteamID64!
-            PlayerCountCurrent: player\GetCount!
-            PlayerCountMax: game\MaxPlayers!
 
 gameevent.Listen "player_connect"
 hook.Add "player_connect", "CFC_ChatTransit_SpawnListener", guard ChatTransit\PlayerConnect
