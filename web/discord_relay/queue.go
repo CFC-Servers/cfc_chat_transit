@@ -114,7 +114,7 @@ func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, 
 
 func sendConnectMessage(discord *discordgo.Session, event EventStruct) {
 	message := steamLinkMessage(event, "Connected to the server")
-	message = message + fmt.Sprintf("%v/%v", event.Data.PlayerCountCurrent, event.Data.PlayerCountMax)
+	message = message + fmt.Sprintf(" %v/%v", event.Data.PlayerCountCurrent, event.Data.PlayerCountMax)
 	sendEvent(discord, event, message, COLOR_GREEN, EMOJI_CONNECT)
 }
 
