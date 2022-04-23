@@ -11,4 +11,3 @@ ChatTransit.TrackPlayerCountDisconnected = () =>
 
 hook.Add "player_connect", "CFC_ChatTransit_PlayerCountTracker", ChatTransit.TrackPlayerCountConnected
 hook.Add "player_disconnect", "CFC_ChatTransit_PlayerCountTracker", ChatTransit.TrackPlayerCountDisconnected
-diff --git a/moon/cfc_chat_transit/server/modules/disconnect.moon b/moon/cfc_chat_transit/server/modules/disconnect.moon
