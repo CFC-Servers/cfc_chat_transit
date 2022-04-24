@@ -3,10 +3,10 @@ gameevent.Listen "player_disconnect"
 
 with ChatTransit
     .PlayerCount = 0
-    .TrackPlayerCountConnected = () =>
+    .TrackPlayerCountConnected = ->
         .PlayerCount = .PlayerCount + 1
 
-    .TrackPlayerCountDisconnected = () =>
+    .TrackPlayerCountDisconnected = ->
         .PlayerCount = .PlayerCount - 1
 
     hook.Add "player_connect", "CFC_ChatTransit_PlayerCountTracker", .TrackPlayerCountConnected
