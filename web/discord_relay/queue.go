@@ -37,6 +37,9 @@ var MessageQueue = make(chan []byte, 100)
 var WebhookId string = os.Getenv("WEBHOOK_ID")
 var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
 
+var VoiceWebhookId string = os.Getenv("VOICE_WEBHOOK_ID")
+var VoiceWebhookSecret string = os.Getenv("VOICE_WEBHOOK_SECRET")
+
 const urlRegexString = `https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)`
 
 const (
@@ -202,7 +205,7 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 			AvatarURL: event.Data.Avatar,
 			Embeds:    embeds,
 		}
-		message, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
+		message, err := discord.WebhookExecute(VoiceWebhookId, VoiceWebhookSecret, true, params)
 
 		if err != nil {
 			log.Println(err)
@@ -219,7 +222,7 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 		log.Println(updateMessageID)
 		log.Println(params.Embeds[0].Description)
 
-		message, err := discord.WebhookMessageEdit(WebhookId, WebhookSecret, updateMessageID, params)
+		message, err := discord.WebhookMessageEdit(VoiceWebhookId, VoiceWebhookSecret, updateMessageID, params)
 		if err != nil {
 			log.Println("Error sending webhook message edit")
 			log.Println(err)
