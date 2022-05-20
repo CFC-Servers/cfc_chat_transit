@@ -7,8 +7,10 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/patrickmn/go-cache"
 )
 
 var discord *discordgo.Session
@@ -46,6 +48,7 @@ const (
 	EMOJI_MAP     = "🗺️"
 	EMOJI_CONNECT = "📡"
 	EMOJI_ULX     = "⌨️"
+	EMOJI_VOICE   = "🗣️"
 
 	COLOR_RED    = 0xE7373E
 	COLOR_GREEN  = 0x37E73E
@@ -89,7 +92,7 @@ func sendMessage(discord *discordgo.Session, message EventStruct) {
 	}
 }
 
-func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, color int, emoji string) {
+func buildEvent(discord *discordgo.Session, event EventStruct, eventText string, color int, emoji string) *discordgo.WebhookParams {
 	params := &discordgo.WebhookParams{
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
@@ -104,11 +107,18 @@ func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, 
 		},
 	}
 
-	_, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
+	return params
+}
+
+func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, color int, emoji string) *discordgo.Message {
+	params := buildEvent(discord, event, eventText, color, emoji)
+	message, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
 
 	if err != nil {
 		log.Println(err)
 	}
+
+	return message
 }
 
 func sendConnectMessage(discord *discordgo.Session, event EventStruct) {
@@ -170,8 +180,36 @@ func sendPvpStatusChange(discord *discordgo.Session, event EventStruct) {
 	sendEvent(discord, event, event.Data.Content, color, emoji)
 }
 
+func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions *cache.Cache) {
+	transcript := event.Data.Content
+	steamId := event.Data.SteamId
+
+	messageID, found := voiceSessions.Get(steamId)
+
+	if found == false {
+		message := sendEvent(discord, event, transcript, COLOR_BLUE, EMOJI_VOICE)
+		voiceSessions.Set(steamId, message.ID, cache.DefaultExpiration)
+	} else {
+		params := &discordgo.WebhookEdit{
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Description: fmt.Sprintf("%v ***%v***", EMOJI_VOICE, transcript),
+					Color:       COLOR_BLUE,
+				},
+			},
+		}
+
+		message, err := discord.WebhookMessageEdit(WebhookId, WebhookSecret, messageID.(string), params)
+		if err != nil {
+			log.Println(err)
+		}
+		voiceSessions.Set(steamId, message.ID, cache.DefaultExpiration)
+	}
+}
+
 func queueGroomer() {
 	discord, err := discordgo.New("")
+	voiceSessions := cache.New(2*time.Second, 1*time.Second)
 
 	log.Println(WebhookId, WebhookSecret)
 
@@ -211,6 +249,9 @@ func queueGroomer() {
 			sendUlxAction(discord, message)
 		case "pvp_status_change":
 			sendPvpStatusChange(discord, message)
+		case "voice_transcription":
+			sendVoiceText(discord, message, voiceSessions)
 		}
+
 	}
 }
