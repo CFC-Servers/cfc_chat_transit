@@ -93,7 +93,7 @@ func sendMessage(discord *discordgo.Session, message EventStruct) {
 	}
 }
 
-func buildEvent(discord *discordgo.Session, event EventStruct, eventText string, color int, emoji string) *discordgo.WebhookParams {
+func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, color int, emoji string) *discordgo.Message {
 	params := &discordgo.WebhookParams{
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
@@ -108,11 +108,6 @@ func buildEvent(discord *discordgo.Session, event EventStruct, eventText string,
 		},
 	}
 
-	return params
-}
-
-func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, color int, emoji string) *discordgo.Message {
-	params := buildEvent(discord, event, eventText, color, emoji)
 	message, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
 
 	if err != nil {
@@ -190,6 +185,13 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 	steamId := event.Data.SteamId
 	messageID, found := voiceSessions.Get(steamId)
 
+	embeds := []*discordgo.MessageEmbed{
+		{
+			Description: fmt.Sprintf("%v %v", EMOJI_VOICE, transcript),
+			Color:       COLOR_BLUE,
+		},
+	}
+
 	if found == false {
 		log.Println("Creating new message for voice")
 		params := &discordgo.WebhookParams{
@@ -198,12 +200,7 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 			},
 			Username:  event.Data.SteamName,
 			AvatarURL: event.Data.Avatar,
-			Embeds: []*discordgo.MessageEmbed{
-				{
-					Description: fmt.Sprintf("%v %v", EMOJI_VOICE, transcript),
-					Color:       COLOR_BLUE,
-				},
-			},
+			Embeds:    embeds,
 		}
 		message, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
 
@@ -215,12 +212,7 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 	} else {
 		log.Println("Updating existing message for voice")
 		params := &discordgo.WebhookEdit{
-			Embeds: []*discordgo.MessageEmbed{
-				{
-					Description: fmt.Sprintf("%v %v", EMOJI_VOICE, transcript),
-					Color:       COLOR_BLUE,
-				},
-			},
+			Embeds: embeds,
 		}
 
 		updateMessageID := messageID.(string)
