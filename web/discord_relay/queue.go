@@ -182,25 +182,53 @@ func sendPvpStatusChange(discord *discordgo.Session, event EventStruct) {
 
 func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions *cache.Cache) {
 	transcript := event.Data.Content
-	steamId := event.Data.SteamId
+	if transcript == "" {
+		transcript = "..."
+	}
 
+	steamId := event.Data.SteamId
 	messageID, found := voiceSessions.Get(steamId)
 
 	if found == false {
-		message := sendEvent(discord, event, transcript, COLOR_BLUE, EMOJI_VOICE)
+		log.Println("Creating new message for voice")
+		params := &discordgo.WebhookParams{
+			AllowedMentions: &discordgo.MessageAllowedMentions{
+				Parse: []discordgo.AllowedMentionType{},
+			},
+			Username:  event.Data.SteamName,
+			AvatarURL: event.Data.Avatar,
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Description: fmt.Sprintf("%v %v", EMOJI_VOICE, transcript),
+					Color:       COLOR_BLUE,
+				},
+			},
+		}
+		message, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
+
+		if err != nil {
+			log.Println(err)
+		}
+
 		voiceSessions.Set(steamId, message.ID, cache.DefaultExpiration)
 	} else {
+		log.Println("Updating existing message for voice")
 		params := &discordgo.WebhookEdit{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Description: fmt.Sprintf("%v ***%v***", EMOJI_VOICE, transcript),
+					Description: fmt.Sprintf("%v %v", EMOJI_VOICE, transcript),
 					Color:       COLOR_BLUE,
 				},
 			},
 		}
 
-		message, err := discord.WebhookMessageEdit(WebhookId, WebhookSecret, messageID.(string), params)
+		updateMessageID := messageID.(string)
+		log.Println(updateMessageID)
+		log.Println(params.Embeds[0].Description)
+
+		message, err := discord.WebhookMessageEdit(WebhookId, WebhookSecret, updateMessageID, params)
 		if err != nil {
+			log.Println("Error sending webhook message edit")
 			log.Println(err)
 		}
 		voiceSessions.Set(steamId, message.ID, cache.DefaultExpiration)
@@ -209,7 +237,7 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 
 func queueGroomer() {
 	discord, err := discordgo.New("")
-	voiceSessions := cache.New(2*time.Second, 1*time.Second)
+	voiceSessions := cache.New(3*time.Second, 1*time.Second)
 
 	log.Println(WebhookId, WebhookSecret)
 
@@ -249,7 +277,7 @@ func queueGroomer() {
 			sendUlxAction(discord, message)
 		case "pvp_status_change":
 			sendPvpStatusChange(discord, message)
-		case "voice_transcription":
+		case "voice_transcript":
 			sendVoiceText(discord, message, voiceSessions)
 		}
 
