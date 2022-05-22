@@ -12,7 +12,7 @@ ChatTransit.PlayerDisconnected = (data) =>
         Data:
             SteamName: ply and ply\Nick! or name
             SteamId: ply and ply\SteamID64! or SteamIDTo64 steamId
-            PlayerCountCurrent: ChatTransit.PlayerCount
+            PlayerCountCurrent: player\GetCount! - 1
             PlayerCountMax: game\MaxPlayers!
             Content: reason
 
