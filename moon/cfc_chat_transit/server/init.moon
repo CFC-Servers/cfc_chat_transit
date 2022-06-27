@@ -3,6 +3,7 @@ require "logger"
 
 export ChatTransit = { Logger: Logger "ChatTransit" }
 include "cfc_chat_transit/server/avatar_service.lua"
+include "cfc_chat_transit/server/player_count.lua"
 
 import Read from file
 import GetColor from team
@@ -66,6 +67,8 @@ ChatTransit.guard = (f) -> (...) ->
     ErrorNoHaltWithStack err unless success
 
     return nil
+
+ChatTransit.delay = (f) -> timer.Simple 0, f
 
 logger\info "Loading modules..."
 for f in *file.Find "cfc_chat_transit/server/modules/*.lua", "LUA"

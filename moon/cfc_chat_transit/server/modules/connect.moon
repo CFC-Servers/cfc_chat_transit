@@ -1,4 +1,4 @@
-import guard from ChatTransit
+import delay, guard from ChatTransit
 import SteamIDTo64 from util
 -- TODO: Send a preliminary avatarservice link that will be backfilled when they fully connect
 
@@ -13,7 +13,7 @@ ChatTransit.PlayerConnect = (data) =>
         Data:
             SteamName: name
             SteamId: steamId and SteamIDTo64 steamId
-            PlayerCountCurrent: player\GetCount! + 1
+            PlayerCountCurrent: ChatTransit.playerCount
             PlayerCountMax: game\MaxPlayers!
 
 ChatTransit.PlayerInitialSpawn = (ply) =>
@@ -24,5 +24,5 @@ ChatTransit.PlayerInitialSpawn = (ply) =>
             SteamId: ply\SteamID64!
 
 gameevent.Listen "player_connect"
-hook.Add "player_connect", "CFC_ChatTransit_SpawnListener", guard ChatTransit\PlayerConnect
+hook.Add "player_connect", "CFC_ChatTransit_SpawnListener", delay guard ChatTransit\PlayerConnect
 hook.Add "PlayerInitialSpawn", "CFC_ChatTransit_SpawnListener", guard ChatTransit\PlayerInitialSpawn
