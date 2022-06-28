@@ -1,4 +1,4 @@
-import getPlayerCount, guard from ChatTransit
+import guard from ChatTransit
 import SteamIDTo64 from util
 -- TODO: Send a preliminary avatarservice link that will be backfilled when they fully connect
 
@@ -8,14 +8,13 @@ ChatTransit.PlayerConnect = (data) =>
     bot = tobool bot
     steamId = nil if bot
 
-    getPlayerCount (count) ->
-        @Send
-            Type: "connect"
-            Data:
-                SteamName: name
-                SteamId: steamId and SteamIDTo64 steamId
-                PlayerCountCurrent: count
-                PlayerCountMax: game\MaxPlayers!
+    @Send
+        Type: "connect"
+        Data:
+            SteamName: name
+            SteamId: steamId and SteamIDTo64 steamId
+            PlayerCountCurrent: player\GetCount! + 1
+            PlayerCountMax: game\MaxPlayers!
 
 ChatTransit.PlayerInitialSpawn = (ply) =>
     @Send

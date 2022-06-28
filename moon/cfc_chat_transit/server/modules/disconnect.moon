@@ -1,4 +1,4 @@
-import getPlayerCount, guard from ChatTransit
+import guard from ChatTransit
 import GetBySteamID from player
 import SteamIDTo64 from util
 
@@ -7,15 +7,14 @@ ChatTransit.PlayerDisconnected = (data) =>
 
     ply = GetBySteamID steamId
 
-    getPlayerCount (count) ->
-        @Send
-            Type: "disconnect"
-            Data:
-                SteamName: ply and ply\Nick! or name
-                SteamId: ply and ply\SteamID64! or SteamIDTo64 steamId
-                PlayerCountCurrent: count
-                PlayerCountMax: game\MaxPlayers!
-                Content: reason
+    @Send
+        Type: "disconnect"
+        Data:
+            SteamName: ply and ply\Nick! or name
+            SteamId: ply and ply\SteamID64! or SteamIDTo64 steamId
+            PlayerCountCurrent: player\GetCount! - 1
+            PlayerCountMax: game\MaxPlayers!
+            Content: reason
 
 gameevent.Listen "player_disconnect"
 hook.Add "player_disconnect", "CFC_ChatTransit_DisconnectListener", guard ChatTransit\PlayerDisconnected

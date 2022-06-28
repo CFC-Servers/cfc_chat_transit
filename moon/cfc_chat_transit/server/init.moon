@@ -6,7 +6,7 @@ include "cfc_chat_transit/server/avatar_service.lua"
 
 import Read from file
 import GetColor from team
-import JSONToTable, TableToJSON from util
+import TableToJSON from util
 
 logger = ChatTransit.Logger
 relayPort = CreateConVar "cfc_relay_port", "", FCVAR_NONE
@@ -66,17 +66,6 @@ ChatTransit.guard = (f) -> (...) ->
     ErrorNoHaltWithStack err unless success
 
     return nil
-
-ChatTransit.getPlayerCount = (cb) ->
-    fail = -> cb player\GetCount!
-
-    success = (body) ->
-        count = JSONToTable body
-        return fail! unless count
-
-        cb count.player_count
-
-    http.Fetch "https://nanny.cfcservers.org/cfc3-status", success, fail
 
 logger\info "Loading modules..."
 for f in *file.Find "cfc_chat_transit/server/modules/*.lua", "LUA"
