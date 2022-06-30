@@ -68,7 +68,7 @@ ChatTransit.guard = (f) -> (...) ->
 
     return nil
 
-ChatTransit.delay = (f) -> timer.Simple 0, f
+ChatTransit.delay = (f) -> (...) -> timer.Simple 0, f ...
 
 logger\info "Loading modules..."
 for f in *file.Find "cfc_chat_transit/server/modules/*.lua", "LUA"
