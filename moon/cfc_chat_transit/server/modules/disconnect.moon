@@ -17,4 +17,4 @@ ChatTransit.PlayerDisconnected = (data) =>
             Content: reason
 
 gameevent.Listen "player_disconnect"
-hook.Add "player_disconnect", "CFC_ChatTransit_DisconnectListener", delay guard ChatTransit\PlayerDisconnected
+hook.Add "player_disconnect", "CFC_ChatTransit_DisconnectListener", guard ChatTransit\PlayerDisconnected, 0

@@ -24,5 +24,5 @@ ChatTransit.PlayerInitialSpawn = (ply) =>
             SteamId: ply\SteamID64!
 
 gameevent.Listen "player_connect"
-hook.Add "player_connect", "CFC_ChatTransit_SpawnListener", delay guard ChatTransit\PlayerConnect
+hook.Add "player_connect", "CFC_ChatTransit_SpawnListener", guard ChatTransit\PlayerConnect, 0
 hook.Add "PlayerInitialSpawn", "CFC_ChatTransit_SpawnListener", guard ChatTransit\PlayerInitialSpawn
