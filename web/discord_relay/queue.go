@@ -232,7 +232,7 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 
 func queueGroomer() {
 	discord, err := discordgo.New("")
-	voiceSessions := cache.New(8*time.Second, 1*time.Second)
+	voiceSessions := cache.New(5500*time.Millisecond, 250*time.Millisecond)
 
 	log.Println(WebhookId, WebhookSecret)
 
