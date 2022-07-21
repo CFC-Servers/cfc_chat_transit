@@ -188,6 +188,7 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 	transcriptSpl := strings.Split(transcript, "-final")
 	if len(transcriptSpl) > 1 {
 		isFinal = true
+		transcript = transcriptSpl[0]
 	}
 
 	steamId := event.Data.SteamId
