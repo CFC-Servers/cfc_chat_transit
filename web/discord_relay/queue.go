@@ -217,7 +217,11 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 			log.Println(err)
 		}
 
-		voiceSessions.Set(steamId, message.ID, cache.DefaultExpiration)
+		if isFinal {
+			voiceSessions.Delete(steamId)
+		} else {
+			voiceSessions.Set(steamId, message.ID, cache.DefaultExpiration)
+		}
 	} else {
 		log.Println("Updating existing message for voice")
 		params := &discordgo.WebhookEdit{
@@ -233,12 +237,14 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 			log.Println("Error sending webhook message edit")
 			log.Println(err)
 		}
-		voiceSessions.Set(steamId, message.ID, cache.DefaultExpiration)
+
+		if isFinal {
+			voiceSessions.Delete(steamId)
+		} else {
+			voiceSessions.Set(steamId, message.ID, cache.DefaultExpiration)
+		}
 	}
 
-	if isFinal {
-		voiceSessions.Delete(steamId)
-	}
 }
 
 func queueGroomer() {
