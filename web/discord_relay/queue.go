@@ -185,6 +185,12 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 		return
 	}
 
+	isFinal := false
+	transcriptSpl := strings.Split(transcript, "-final")
+	if len(transcriptSpl) > 1 {
+		isFinal = true
+	}
+
 	steamId := event.Data.SteamId
 	messageID, found := voiceSessions.Get(steamId)
 
@@ -228,6 +234,10 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 			log.Println(err)
 		}
 		voiceSessions.Set(steamId, message.ID, cache.DefaultExpiration)
+	}
+
+	if isFinal {
+		voiceSessions.Delete(steamId)
 	}
 }
 
