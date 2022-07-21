@@ -181,15 +181,16 @@ func sendPvpStatusChange(discord *discordgo.Session, event EventStruct) {
 
 func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions *cache.Cache) {
 	transcript := event.Data.Content
-	if transcript == "" {
-		return
-	}
 
 	isFinal := false
 	transcriptSpl := strings.Split(transcript, "::final")
 	if len(transcriptSpl) > 1 {
 		isFinal = true
 		transcript = transcriptSpl[0]
+	}
+
+	if transcript == "" {
+		return
 	}
 
 	steamId := event.Data.SteamId
