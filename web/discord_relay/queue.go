@@ -196,9 +196,29 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 	steamId := event.Data.SteamId
 	messageID, found := voiceSessions.Get(steamId)
 
+	// Format is: "<filename-whatever>:voiceLink:<actual content here>"
+	splitForLink := strings.Split(transcript, ":voiceLink:")
+
+	voiceLink := ""
+
+	if len(splitForLink) == 1 {
+		transcript = splitForLink[0]
+	} else {
+		voiceLink = fmt.Sprintf("https://larynx.cfcservers.org/%s/%s", steamId, splitForLink[0])
+		transcript = splitForLink[1]
+	}
+
+	var description string
+
+	if len(voiceLink) > 0 {
+		description = fmt.Sprintf("[%v](%v) %v", EMOJI_VOICE, voiceLink, transcript)
+	} else {
+		description = fmt.Sprintf("%v %v", EMOJI_VOICE, transcript)
+	}
+
 	embeds := []*discordgo.MessageEmbed{
 		{
-			Description: fmt.Sprintf("%v %v", EMOJI_VOICE, transcript),
+			Description: description,
 			Color:       COLOR_BLUE,
 		},
 	}
