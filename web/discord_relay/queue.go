@@ -32,7 +32,7 @@ type EventData struct {
 	PlayerCountCurrent float32
 }
 
-var MessageQueue = make(chan []byte, 100)
+var MessageQueue = make(chan []byte, 10000)
 
 var WebhookId string = os.Getenv("WEBHOOK_ID")
 var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
@@ -251,7 +251,7 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 
 func queueGroomer() {
 	discord, err := discordgo.New("")
-	voiceSessions := cache.New(1*time.Minute, 250*time.Millisecond)
+	voiceSessions := cache.New(2*time.Minute, 250*time.Millisecond)
 
 	log.Println(WebhookId, WebhookSecret)
 
