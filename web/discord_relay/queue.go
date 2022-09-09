@@ -206,6 +206,10 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 			voiceLink = fmt.Sprintf("https://larynx.cfcservers.org/%s.ogg", splitForLink[0])
 			transcript = splitForLink[1]
 		}
+
+		if transcript == "" {
+			return
+		}
 	}
 
 	var description string
