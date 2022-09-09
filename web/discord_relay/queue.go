@@ -189,7 +189,7 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 		transcript = transcriptSpl[0]
 	}
 
-	if transcript == "" {
+	if len(transcript) == 0 {
 		return
 	}
 
@@ -207,7 +207,7 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 			transcript = splitForLink[1]
 		}
 
-		if transcript == "" {
+		if len(transcript) == 0 {
 			return
 		}
 	}
