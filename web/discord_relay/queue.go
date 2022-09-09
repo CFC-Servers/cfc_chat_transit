@@ -48,6 +48,7 @@ const (
 	EMOJI_HALTED  = "<:halted:398133588010336259>"
 	EMOJI_BUILD   = "<:build:933512140395012107>"
 	EMOJI_PVP     = "<:bk:812130062379515906>"
+	EMOJI_PLAY    = "<:playbuttonsmaller:1017714810865078353>"
 	EMOJI_MAP     = "🗺️"
 	EMOJI_CONNECT = "📡"
 	EMOJI_ULX     = "⌨️"
@@ -215,7 +216,7 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 	var description string
 
 	if len(voiceLink) > 0 {
-		description = fmt.Sprintf("[%v](%v) %v", EMOJI_VOICE, voiceLink, transcript)
+		description = fmt.Sprintf("%v [%v]](%v) %v", EMOJI_VOICE, EMOJI_PLAY, voiceLink, transcript)
 	} else {
 		description = fmt.Sprintf("%v %v", EMOJI_VOICE, transcript)
 	}
@@ -275,7 +276,7 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 
 func queueGroomer() {
 	discord, err := discordgo.New("")
-	voiceSessions := cache.New(2*time.Minute, 250*time.Millisecond)
+	voiceSessions := cache.New(3*time.Minute, 100*time.Millisecond)
 
 	log.Println(WebhookId, WebhookSecret)
 
