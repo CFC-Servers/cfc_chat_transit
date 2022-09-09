@@ -216,7 +216,7 @@ func sendVoiceText(discord *discordgo.Session, event EventStruct, voiceSessions 
 	var description string
 
 	if len(voiceLink) > 0 {
-		description = fmt.Sprintf("%v [%v]](%v) %v", EMOJI_VOICE, EMOJI_PLAY, voiceLink, transcript)
+		description = fmt.Sprintf("%v [%v](%v) %v", EMOJI_VOICE, EMOJI_PLAY, voiceLink, transcript)
 	} else {
 		description = fmt.Sprintf("%v %v", EMOJI_VOICE, transcript)
 	}
