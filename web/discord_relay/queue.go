@@ -1,15 +1,14 @@
 package main
 
 import (
-	"container/list"
 	"encoding/json"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"github.com/cfc-servers/cfc_chat_transit/voice"
 	"log"
 	"os"
 	"regexp"
 	"strings"
-	"time"
 )
 
 var discord *discordgo.Session
@@ -189,36 +188,16 @@ func sendPvpStatusChange(discord *discordgo.Session, event EventStruct) {
 	sendEvent(discord, event, event.Data.Content, color, emoji)
 }
 
-func processVoiceText(event EventStruct, voiceOperations *list.List) {
-	transcript := event.Data.Content
+func sendVoiceText(discord *discordgo.Session, data *voice.Session) string {
+	transcript := data.Message
+	steamName := data.SteamName
+	avatar := data.Avatar
+	fileName := data.FileName
+	messageId := data.MessageId
 
-	isFinal := false
-	transcriptSpl := strings.Split(transcript, "::final")
-	if len(transcriptSpl) > 1 {
-		isFinal = true
-		transcript = transcriptSpl[0]
-	}
-
-	if len(transcript) == 0 {
-		return
-	}
-
-	voiceLink := ""
-	steamId := event.Data.SteamId
-	steamName := event.Data.SteamName
-
-	if isFinal {
-		// Format is: "<filename-whatever>:voiceLink:<actual content here>"
-		splitForLink := strings.Split(transcript, ":voiceLink:")
-
-		if len(splitForLink) > 1 {
-			voiceLink = fmt.Sprintf("https://larynx.cfcservers.org/%s.ogg", splitForLink[0])
-			transcript = splitForLink[1]
-		}
-
-		if len(transcript) == 0 {
-			return
-		}
+	var voiceLink string
+	if len(fileName) > 0 {
+		voiceLink = fmt.Sprintf("https://larynx.cfcservers.org/%v.ogg", fileName)
 	}
 
 	var description string
@@ -229,108 +208,64 @@ func processVoiceText(event EventStruct, voiceOperations *list.List) {
 		description = fmt.Sprintf("%v %v", EMOJI_VOICE, transcript)
 	}
 
-	for e := voiceOperations.Front(); e != nil; e = e.Next() {
-		voiceOperation := e.Value.(VoiceMessageOperation)
+	embeds := []*discordgo.MessageEmbed{
+		{
+			Description: description,
+			Color:       COLOR_BLUE,
+		},
+	}
 
-		if voiceOperation.SteamId == steamId && !voiceOperation.IsFinal {
-			log.Printf("Found existing Operation for %s, amending to: %s", steamId, description)
-			voiceOperation.Message = description
-			voiceOperation.IsFinal = isFinal
-			return
+	if len(messageId) == 0 {
+		log.Println("Creating new message for voice")
+		params := &discordgo.WebhookParams{
+			AllowedMentions: &discordgo.MessageAllowedMentions{
+				Parse: []discordgo.AllowedMentionType{},
+			},
+			Username:  steamName,
+			AvatarURL: avatar,
+			Embeds:    embeds,
+		}
+
+		message, err := discord.WebhookExecute(VoiceWebhookId, VoiceWebhookSecret, true, params)
+
+		if err != nil {
+			log.Println("Error sending webhook message create")
+			log.Println(err)
+			return ""
+		}
+
+		return message.ID
+	} else {
+		log.Println("Updating existing message for voice")
+		params := &discordgo.WebhookEdit{
+			Embeds: embeds,
+		}
+
+		log.Println(messageId)
+		log.Println(params.Embeds[0].Description)
+
+		_, err := discord.WebhookMessageEdit(VoiceWebhookId, VoiceWebhookSecret, messageId, params)
+		if err != nil {
+			log.Println("Error sending webhook message edit")
+			log.Println(err)
 		}
 	}
 
-	log.Printf("Queueing new voiceMessageOperation for %s (%s)", steamId, description)
-	voiceOperation := VoiceMessageOperation{
-		SteamId:   steamId,
-		SteamName: steamName,
-		Message:   description,
-		IsFinal:   isFinal,
-		MessageId: "",
-	}
-
-	voiceOperations.PushBack(voiceOperation)
+	return ""
 }
 
-func processVoiceOperations(discord *discordgo.Session, operations *list.List) {
-	bucket := discord.Ratelimiter.GetBucket("voiceTranscriptions")
+func processVoiceText(discord *discordgo.Session, queueVoiceText func(string, string, string, string), event EventStruct) {
+	steamId := event.Data.SteamId
+	steamName := event.Data.SteamName
+	avatar := event.Data.Avatar
+	data := event.Data.Content
 
-	for {
-		time.Sleep(time.Millisecond * 100)
-		discord.Ratelimiter.LockBucketObject(bucket).Unlock()
-
-		firstOperation := operations.Front()
-		if firstOperation == nil {
-			continue
-		}
-
-		operation := firstOperation.Value.(VoiceMessageOperation)
-		description := operation.Message
-		messageId := operation.MessageId
-
-		if len(description) == 0 {
-			operations.MoveToBack(operations.Front())
-			continue
-		}
-
-		embeds := []*discordgo.MessageEmbed{
-			{
-				Description: description,
-				Color:       COLOR_BLUE,
-			},
-		}
-
-		if len(messageId) == 0 {
-			log.Println("Creating new message for voice")
-			params := &discordgo.WebhookParams{
-				AllowedMentions: &discordgo.MessageAllowedMentions{
-					Parse: []discordgo.AllowedMentionType{},
-				},
-				Username:  operation.SteamName,
-				AvatarURL: operation.Avatar,
-				Embeds:    embeds,
-			}
-
-			message, err := discord.WebhookExecute(VoiceWebhookId, VoiceWebhookSecret, true, params)
-
-			if err != nil {
-				log.Println("Error sending webhook message create")
-				log.Println(err)
-				operations.MoveToBack(operations.Front())
-				continue
-			}
-
-			operation.MessageId = message.ID
-		} else {
-			log.Println("Updating existing message for voice")
-			params := &discordgo.WebhookEdit{
-				Embeds: embeds,
-			}
-
-			log.Println(messageId)
-			log.Println(params.Embeds[0].Description)
-
-			_, err := discord.WebhookMessageEdit(VoiceWebhookId, VoiceWebhookSecret, messageId, params)
-			if err != nil {
-				log.Println("Error sending webhook message edit")
-				log.Println(err)
-				operations.MoveToBack(operations.Front())
-				continue
-			}
-		}
-
-		if operation.IsFinal {
-			operations.Remove(operations.Front())
-			continue
-		}
-
-		operation.Message = ""
-	}
+	queueVoiceText(steamId, steamName, avatar, data)
 }
 
 func queueGroomer() {
 	discord, err := discordgo.New(DiscordToken)
-	voiceOperations := list.New()
+	voiceManager := voice.NewManager(discord, sendVoiceText)
 
 	if err != nil {
 		log.Fatal("error connecting:", err)
@@ -338,9 +273,6 @@ func queueGroomer() {
 	}
 
 	log.Println("Successfully connected to Discord")
-
-	go processVoiceOperations(discord, voiceOperations)
-	log.Println("Started VoiceOperations processor")
 
 	for {
 		rawMessage := <-MessageQueue
@@ -372,7 +304,7 @@ func queueGroomer() {
 		case "pvp_status_change":
 			sendPvpStatusChange(discord, message)
 		case "voice_transcript":
-			processVoiceText(message, voiceOperations)
+			processVoiceText(discord, voiceManager.ReceiveVoiceTranscript, message)
 		}
 
 	}
