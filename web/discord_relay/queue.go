@@ -244,21 +244,22 @@ func sendVoiceText(discord *discordgo.Session, data *voice.Session) string {
 		log.Println(messageId)
 		log.Println(params.Embeds[0].Description)
 
-		_, err := discord.WebhookMessageEdit(VoiceWebhookId, VoiceWebhookSecret, messageId, params)
+		message, err := discord.WebhookMessageEdit(VoiceWebhookId, VoiceWebhookSecret, messageId, params)
 		if err != nil {
 			log.Println("Error sending webhook message edit")
 			log.Println(err)
 		}
-	}
 
-	return ""
+		return message.ID
+	}
 }
 
-func processVoiceText(discord *discordgo.Session, queueVoiceText func(string, string, string, string), event EventStruct) {
+func processVoiceText(queueVoiceText func(string, string, string, string), event EventStruct) {
 	steamId := event.Data.SteamId
 	steamName := event.Data.SteamName
 	avatar := event.Data.Avatar
 	data := event.Data.Content
+	log.Println(data)
 
 	queueVoiceText(steamId, steamName, avatar, data)
 }
@@ -304,7 +305,7 @@ func queueGroomer() {
 		case "pvp_status_change":
 			sendPvpStatusChange(discord, message)
 		case "voice_transcript":
-			processVoiceText(discord, voiceManager.ReceiveVoiceTranscript, message)
+			processVoiceText(voiceManager.ReceiveVoiceTranscript, message)
 		}
 
 	}
