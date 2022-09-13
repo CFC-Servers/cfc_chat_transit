@@ -5,6 +5,7 @@ local proxVoice
 
 proxVoiceEnabled = ->
     proxVoice or= GetConVar "force_proximity_voice"
+    return false unless proxVoice
     return proxVoice\GetBool!
 
 ChatTransit.ReceiveVoiceTranscript = (steamID64, data) =>

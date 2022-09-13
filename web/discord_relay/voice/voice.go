@@ -59,8 +59,12 @@ func (v *Manager) runSendQueue() {
 
 		v.opmutex.Lock()
 
-		var firstOperation *Operation
-		firstOperation, v.Operations = v.Operations[0], v.Operations[1:]
+		log.Println(v.Operations)
+		firstOperation := v.Operations[0]
+		log.Println(firstOperation)
+		v.Operations = v.Operations[1:]
+		log.Println(v.Operations)
+		log.Println("")
 
 		session := firstOperation.Session
 		description := session.Message
@@ -74,6 +78,7 @@ func (v *Manager) runSendQueue() {
 		messageId := v.sendMessage(v.discord, session)
 
 		if len(messageId) == 0 {
+			log.Println("Received no message ID from sendMessage")
 			// Failed to send/update message, send to back of queue
 			v.Operations = append(v.Operations, firstOperation)
 			v.opmutex.Unlock()
@@ -114,6 +119,11 @@ func (v *Manager) ReceiveVoiceTranscript(steamId string, steamName string, avata
 
 		v.Sessions[sessionId] = session
 	} else {
+		// Nothing changed - we don't need to queue an Operation for this
+		if !isFinal && session.Message == newMessage {
+			return
+		}
+
 		session.Message = newMessage
 		session.Finished = isFinal
 		session.FileName = fileName
