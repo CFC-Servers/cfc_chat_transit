@@ -194,6 +194,7 @@ func sendVoiceText(discord *discordgo.Session, data *voice.Session) string {
 	avatar := data.Avatar
 	fileName := data.FileName
 	messageId := data.MessageId
+	isFinal := data.Finished
 
 	var voiceLink string
 	if len(fileName) > 0 {
@@ -202,7 +203,7 @@ func sendVoiceText(discord *discordgo.Session, data *voice.Session) string {
 
 	var description string
 
-	if len(voiceLink) > 0 {
+	if isFinal && len(voiceLink) > 0 {
 		description = fmt.Sprintf("%v [%v](%v) %v", EMOJI_VOICE, EMOJI_PLAY, voiceLink, transcript)
 	} else {
 		description = fmt.Sprintf("%v %v", EMOJI_VOICE, transcript)
