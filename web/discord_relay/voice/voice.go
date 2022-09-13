@@ -59,12 +59,8 @@ func (v *Manager) runSendQueue() {
 
 		v.opmutex.Lock()
 
-		log.Println(v.Operations)
 		firstOperation := v.Operations[0]
-		log.Println(firstOperation)
 		v.Operations = v.Operations[1:]
-		log.Println(v.Operations)
-		log.Println("")
 
 		session := firstOperation.Session
 		description := session.Message
