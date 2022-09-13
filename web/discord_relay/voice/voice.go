@@ -64,7 +64,6 @@ func (v *Manager) runSendQueue() {
 
 		session := firstOperation.Session
 		description := session.Message
-		messageId := session.MessageId
 
 		if len(description) == 0 {
 			// What is this? Why are you showing this to me
@@ -72,7 +71,7 @@ func (v *Manager) runSendQueue() {
 			continue
 		}
 
-		messageId = v.sendMessage(v.discord, session)
+		messageId := v.sendMessage(v.discord, session)
 
 		if len(messageId) == 0 {
 			// Failed to send/update message, send to back of queue
