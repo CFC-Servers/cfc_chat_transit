@@ -60,12 +60,14 @@ func (v *Manager) runSendQueue() {
 		v.opmutex.Lock()
 
 		firstOperation := v.Operations[0]
+		log.Printf("Processing message for session %v", firstOperation.Session.FileName)
 		v.Operations = v.Operations[1:]
 
 		session := firstOperation.Session
 		description := session.Message
 
 		if len(description) == 0 {
+			log.Printf("No description for session %v", session.FileName)
 			// What is this? Why are you showing this to me
 			v.opmutex.Unlock()
 			continue
