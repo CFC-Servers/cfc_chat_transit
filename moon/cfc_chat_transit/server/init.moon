@@ -17,7 +17,7 @@ hook.Add "Think", loadHook, ->
     hook.Remove "Think", loadHook
 
     ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1:#{relayPort\GetString!}/relay"
-    ChatTransit.Realm = CreateConVar "cfc_realm", "", FCVAR_NONE, "CFC Realm Name"
+    ChatTransit.Realm = CreateConVar "cfc_realm", "unknown", FCVAR_REPLICATED + FCVAR_ARCHIVE, "The Realm Name"
 
     with ChatTransit.WebSocket
         .reconnectTimerName = "CFC_ChatTransit_WebsocketReconnect"
