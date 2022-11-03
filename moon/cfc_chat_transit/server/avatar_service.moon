@@ -18,11 +18,11 @@ class AvatarService
 
     processAvatar: (avatarUrl, outlineColor, steamID64) =>
         body = TableToJSON { :avatarUrl, :outlineColor, steamID: steamID64 }
-        @logger\info "Sending data to outliner: ", body
+        @logger\debug "Sending data to outliner: ", body
 
         failed = @logger\error
         success = (code, body) ->
-            @logger\info "Avatar request succeeded with code: #{code} | Body: #{body}"
+            @logger\debug "Avatar request succeeded with code: #{code} | Body: #{body}"
             @processedIds[steamID64] = true
 
         HTTP
@@ -34,7 +34,7 @@ class AvatarService
             type: "application/json"
 
     outlineAvatar: (ply, data) =>
-        @logger\info "Received request to outline avatar for ply: #{ply\Nick!}"
+        @logger\debug "Received request to outline avatar for ply: #{ply\Nick!}"
         avatar = data.response.players[1].avatarfull
         outlineColor = ChatTransit\GetTeamColor ply\Team!
         steamID64 = ply\SteamID64!
