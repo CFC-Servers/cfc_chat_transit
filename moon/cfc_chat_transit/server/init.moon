@@ -41,7 +41,7 @@ hook.Add "Think", loadHook, ->
     return nil
 
 ChatTransit.Send = (data) =>
-    logger\info "Sending '#{data.Type}'"
+    logger\debug "Sending '#{data.Type}'"
     steamID64 = data.Data.SteamId
 
     data.Data.Avatar or= ChatTransit.AvatarService\getAvatar steamID64
