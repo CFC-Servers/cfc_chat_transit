@@ -84,9 +84,8 @@ func sendMessage(discord *discordgo.Session, message EventStruct) {
 	}
 
 	_, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
-
 	if err != nil {
-		log.Println(err)
+		log.Println("WebhookExecute errored: ", err)
 	}
 }
 
