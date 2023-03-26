@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/bwmarrin/discordgo"
-	"github.com/cfc-servers/cfc_chat_transit/voice"
 	"log"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/bwmarrin/discordgo"
+	"github.com/cfc-servers/cfc_chat_transit/voice"
 )
 
 var discord *discordgo.Session
