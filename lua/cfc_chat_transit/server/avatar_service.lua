@@ -54,7 +54,7 @@ do
   _class_0 = setmetatable({
     __init = function(self, logger)
       self.logger = logger:scope("AvatarService")
-      self.outlinerUrl = "http://" .. tostring(avatarServiceAddress:GetString()) .. "/outline"
+      self.outlinerUrl = tostring(avatarServiceAddress:GetString()) .. "/outline"
       self.processedIds = { }
     end,
     __base = _base_0,
