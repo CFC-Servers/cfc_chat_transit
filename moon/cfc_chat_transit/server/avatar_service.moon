@@ -7,7 +7,7 @@ class AvatarService
 
     new: (logger) =>
         @logger = logger\scope "AvatarService"
-        @outlinerUrl = "http://#{avatarServiceAddress\GetString!}/outline"
+        @outlinerUrl = "#{avatarServiceAddress\GetString!}/outline"
         @processedIds = {}
 
     getAvatar: (steamID64) =>
