@@ -15,7 +15,7 @@ loadHook = "ChatTransit_WebsocketLoad"
 hook.Add "Think", loadHook, ->
     hook.Remove "Think", loadHook
 
-    ChatTransit.WebSocket = GWSockets.createWebSocket "wss://cfc3_relay.cfcservers.org/relay"
+    ChatTransit.WebSocket = GWSockets.createWebSocket "wss://cfc3_relay.cfcservers.org/relay", false
     ChatTransit.Realm = CreateConVar "cfc_realm", "unknown", FCVAR_REPLICATED + FCVAR_ARCHIVE, "The Realm Name"
 
     with ChatTransit.WebSocket
