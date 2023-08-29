@@ -10,13 +10,13 @@ import GetColor from team
 import TableToJSON from util
 
 logger = ChatTransit.Logger
-relayPort = CreateConVar "cfc_relay_port", "", FCVAR_NONE
+relayHost = CreateConVar "cfc_relay_host", "", FCVAR_NONE
 
 loadHook = "ChatTransit_WebsocketLoad"
 hook.Add "Think", loadHook, ->
     hook.Remove "Think", loadHook
 
-    ChatTransit.WebSocket = GWSockets.createWebSocket "ws://127.0.0.1:#{relayPort\GetString!}/relay"
+    ChatTransit.WebSocket = GWSockets.createWebSocket "ws://#{relayHost\GetString!}/relay"
     ChatTransit.Realm = CreateConVar "cfc_realm", "", FCVAR_NONE, "CFC Realm Name"
 
     with ChatTransit.WebSocket
