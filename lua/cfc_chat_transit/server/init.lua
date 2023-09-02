@@ -12,10 +12,11 @@ GetColor = team.GetColor
 local TableToJSON
 TableToJSON = util.TableToJSON
 local logger = ChatTransit.Logger
+local relayHost = CreateConVar("cfc_relay_host", "", FCVAR_NONE)
 local loadHook = "ChatTransit_WebsocketLoad"
 hook.Add("Think", loadHook, function()
   hook.Remove("Think", loadHook)
-  ChatTransit.WebSocket = GWSockets.createWebSocket("wss://cfc3_relay.cfcservers.org/relay", false)
+  ChatTransit.WebSocket = GWSockets.createWebSocket("wss://" .. tostring(relayHost:GetString()) .. "/relay", false)
   ChatTransit.Realm = CreateConVar("cfc_realm", "unknown", FCVAR_REPLICATED + FCVAR_ARCHIVE, "The Realm Name")
   do
     local _with_0 = ChatTransit.WebSocket
