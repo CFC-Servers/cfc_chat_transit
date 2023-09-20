@@ -38,14 +38,15 @@ var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
 const urlRegexString = `https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)`
 
 const (
-	EMOJI_JOIN    = "<:green_cross_cir:654105378933571594>"
-	EMOJI_LEAVE   = "<:circle_red:855605697978957854>"
-	EMOJI_HALTED  = "<:halted:398133588010336259>"
-	EMOJI_BUILD   = "<:build:933512140395012107>"
-	EMOJI_PVP     = "<:bk:812130062379515906>"
-	EMOJI_MAP     = "🗺️"
-	EMOJI_CONNECT = "📡"
-	EMOJI_ULX     = "⌨️"
+	EMOJI_JOIN           = "<:green_cross_cir:654105378933571594>"
+	EMOJI_LEAVE          = "<:circle_red:855605697978957854>"
+	EMOJI_HALTED         = "<:halted:398133588010336259>"
+	EMOJI_BUILD          = "<:build:933512140395012107>"
+	EMOJI_PVP            = "<:bk:812130062379515906>"
+	EMOJI_MAP            = "🗺️"
+	EMOJI_CONNECT        = "📡"
+	EMOJI_ULX            = "⌨️"
+	EMOJI_ROUND_MODIFIER = "🔵"
 
 	COLOR_RED    = 0xE7373E
 	COLOR_GREEN  = 0x37E73E
@@ -153,6 +154,10 @@ func sendUlxAction(discord *discordgo.Session, event EventStruct) {
 	sendEvent(discord, event, event.Data.Content, COLOR_BLUE, EMOJI_ULX)
 }
 
+func sendRoundModifierEnabled(discord *discordgo.Session, event EventStruct) {
+	sendEvent(discord, event, event.Data.Content, COLOR_BLUE, EMOJI_ROUND_MODIFIER)
+}
+
 func sendPvpStatusChange(discord *discordgo.Session, event EventStruct) {
 	var emoji string
 	var color int
@@ -211,6 +216,8 @@ func queueGroomer() {
 			sendUlxAction(discord, message)
 		case "pvp_status_change":
 			sendPvpStatusChange(discord, message)
+		case "round_modifier_enabled":
+			sendRoundModifierEnabled(discord, message)
 		}
 	}
 }
