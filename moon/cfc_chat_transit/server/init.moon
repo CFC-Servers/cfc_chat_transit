@@ -34,7 +34,9 @@ hook.Add "Think", loadHook, ->
 
             timer.Create .reconnectTimerName, 2, 30, -> \open!
 
-        .onError = (message) => logger\error "Websocket Error!", message
+        .onError = (message) =>
+            ErrorNoHalt "[ChatTransit] Websocket Error: #{message}"
+            logger\warn "Websocket Error!", message
 
         \open!
 
