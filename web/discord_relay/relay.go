@@ -1,16 +1,32 @@
 package main
 
 import (
-	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{}
 
-func relay(w http.ResponseWriter, r *http.Request) {
-	// TODO: Prevent multiple clients here
+func keepAlive(c *websocket.Conn, r *http.Request) {
+	ctx := r.Context()
 
+	select {
+	case <-time.After(2 * time.Second):
+		err := c.WriteMessage(websocket.PingMessage, []byte("keepalive"))
+		if err != nil {
+			log.Print("Received an error when sending keepalive. Exiting keepalive loop")
+			return
+		}
+	case <-ctx.Done():
+		log.Print("Request context is done. Existing keepalive loop")
+		return
+	}
+}
+
+func relay(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Print("upgrade:", err)
@@ -18,6 +34,8 @@ func relay(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer c.Close()
+
+	go keepAlive(c, r)
 
 	for {
 		_, message, err := c.ReadMessage()
