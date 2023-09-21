@@ -12,17 +12,21 @@ var upgrader = websocket.Upgrader{}
 
 func keepAlive(c *websocket.Conn, r *http.Request) {
 	ctx := r.Context()
+	ticker := time.NewTicker(2 * time.Second)
+	defer ticker.Stop()
 
-	select {
-	case <-time.After(2 * time.Second):
-		err := c.WriteMessage(websocket.PingMessage, []byte("keepalive"))
-		if err != nil {
-			log.Print("Received an error when sending keepalive. Exiting keepalive loop")
+	for {
+		select {
+		case <-ticker.C:
+			err := c.WriteMessage(websocket.PingMessage, []byte("keepalive"))
+			if err != nil {
+				log.Print("Received an error when sending keepalive. Exiting keepalive loop")
+				return
+			}
+		case <-ctx.Done():
+			log.Print("Request context is done. Exiting keepalive loop")
 			return
 		}
-	case <-ctx.Done():
-		log.Print("Request context is done. Existing keepalive loop")
-		return
 	}
 }
 
