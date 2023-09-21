@@ -22,6 +22,13 @@ hook.Add "Think", loadHook, ->
     with ChatTransit.WebSocket
         .reconnectTimerName = "CFC_ChatTransit_WebsocketReconnect"
 
+        .onMessage = (msg) =>
+            if msg ~= "keepalive"
+                logger\info "Received a not-keepalive message from the server:", msg
+                return
+
+            \write "keepalive"
+
         .onConnected = =>
             logger\info "Established websocket connection"
             timer.Remove .reconnectTimerName

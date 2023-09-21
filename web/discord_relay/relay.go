@@ -1,16 +1,29 @@
 package main
 
 import (
-	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{}
 
-func relay(w http.ResponseWriter, r *http.Request) {
-	// TODO: Prevent multiple clients here
+func keepAlive(c *websocket.Conn) {
+	go func() {
+		for {
+			err := c.WriteMessage(websocket.PingMessage, []byte("keepalive"))
+			if err != nil {
+				return
+			}
 
+			time.Sleep(2)
+		}
+	}()
+}
+
+func relay(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Print("upgrade:", err)
@@ -18,6 +31,8 @@ func relay(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer c.Close()
+
+	keepAlive(c)
 
 	for {
 		_, message, err := c.ReadMessage()
