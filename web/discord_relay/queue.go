@@ -63,6 +63,7 @@ const (
 	EMOJI_CONNECT = "📡"
 	EMOJI_ULX     = "⌨️"
 	EMOJI_VOICE   = "🗣️"
+	EMOJI_ROUND_MODIFIER = "🔵"
 
 	COLOR_RED    = 0xE7373E
 	COLOR_GREEN  = 0x37E73E
@@ -170,6 +171,10 @@ func sendAnticrashMessage(discord *discordgo.Session, event EventStruct) {
 
 func sendUlxAction(discord *discordgo.Session, event EventStruct) {
 	sendEvent(discord, event, event.Data.Content, COLOR_BLUE, EMOJI_ULX)
+}
+
+func sendRoundModifierEnabled(discord *discordgo.Session, event EventStruct) {
+	sendEvent(discord, event, event.Data.Content, COLOR_BLUE, EMOJI_ROUND_MODIFIER)
 }
 
 func sendPvpStatusChange(discord *discordgo.Session, event EventStruct) {
@@ -308,6 +313,8 @@ func queueGroomer() {
 			sendUlxAction(discord, message)
 		case "pvp_status_change":
 			sendPvpStatusChange(discord, message)
+		case "round_modifier_enabled":
+			sendRoundModifierEnabled(discord, message)
 		case "voice_transcript":
 			processVoiceText(voiceManager.ReceiveVoiceTranscript, message)
 		}
