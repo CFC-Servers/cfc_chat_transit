@@ -20,7 +20,8 @@ class AvatarService
         return url
 
     processAvatar: (avatarUrl, outlineColor, steamID64) =>
-        body = TableToJSON { :avatarUrl, :outlineColor, steamID: steamID64 }
+        realm = ChatTransit.Realm\GetString!
+        body = TableToJSON { :avatarUrl, :outlineColor, :realm, steamID: steamID64 }
         @logger\debug "Sending data to outliner: ", body
 
         failed = @logger\error
