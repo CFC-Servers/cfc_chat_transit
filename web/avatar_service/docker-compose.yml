@@ -12,7 +12,7 @@ services:
   service:
     build:
       context: .
-      dockerfile: Dockerfile.service
+      dockerfile: Dockerfile
     command: flask run --host 0.0.0.0 --port 8080
     container_name: "${REALM}_chat_transit_avatar_service"
     ports:
@@ -22,5 +22,4 @@ services:
     env_file:
       - .env
     volumes:
-      - ./:/build/src
       - "$AVATARS_DIR:/avatars:z"

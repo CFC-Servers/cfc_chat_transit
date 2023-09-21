@@ -9,3 +9,4 @@ services:
       - .env
     volumes:
       - ./:/build/src
+    restart: always
