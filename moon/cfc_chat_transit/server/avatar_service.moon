@@ -40,7 +40,7 @@ class AvatarService
     outlineAvatar: (ply, data) =>
         @logger\debug "Received request to outline avatar for ply: #{ply\Nick!}"
         avatar = data.response.players[1].avatarfull
-        outlineColor = ChatTransit\GetTeamColor ply\Team!
+        outlineColor = ChatTransit\GetRankColor ply
         steamID64 = ply\SteamID64!
 
         @processAvatar avatar, outlineColor, steamID64

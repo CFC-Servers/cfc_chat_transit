@@ -59,13 +59,11 @@ ChatTransit.Send = (data) =>
 
     @WebSocket\write TableToJSON data
 
-ChatTransit.TeamColorCache = {}
-ChatTransit.GetTeamColor = (teamName) =>
-    return @TeamColorCache[teamName] if @TeamColorCache[teamName]
+ChatTransit.GetRankColor = (ply) =>
+    groupName = ULib.ucl.users[ply\SteamID!].group
+    team = ULib.ucl.groups[groupName].team
 
-    teamColor = tostring GetColor teamName
-
-    @TeamColorCache[teamName] = teamColor
+    teamColor = "#{team.color_red} #{team.color_green} #{team.color_blue} 255"
 
     teamColor
 
