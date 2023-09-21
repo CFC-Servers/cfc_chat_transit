@@ -62,6 +62,6 @@ hook.Add "PlayerDisconnected", "CFC_ChatTransit_AvatarServiceReset", (ply) ->
         ErrorNoHalt "[ChatTransit] Failed to get player's SteamID64 in PlayerDisconnected"
         return
 
-    AvatarService.processedIDs[steamID64] = nil
+    ChatTransit.AvatarService.processedIDs[steamID64] = nil
 
     return nil
