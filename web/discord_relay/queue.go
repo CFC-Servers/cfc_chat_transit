@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/cfc-servers/cfc_chat_transit/voice"
 )
 
 var discord *discordgo.Session
@@ -30,23 +31,39 @@ type EventData struct {
 	PlayerCountCurrent float32
 }
 
-var MessageQueue = make(chan []byte, 100)
+type VoiceMessageOperation struct {
+	Message   string
+	MessageId string
+	SteamId   string
+	SteamName string
+	Avatar    string
+	IsFinal   bool
+}
+
+var MessageQueue = make(chan []byte, 10000)
 
 var WebhookId string = os.Getenv("WEBHOOK_ID")
 var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
 
+var VoiceWebhookId string = os.Getenv("VOICE_WEBHOOK_ID")
+var VoiceWebhookSecret string = os.Getenv("VOICE_WEBHOOK_SECRET")
+
+var DiscordToken string = os.Getenv("DISCORD_TOKEN")
+
 const urlRegexString = `https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)`
 
 const (
-	EMOJI_JOIN           = "<:green_cross_cir:654105378933571594>"
-	EMOJI_LEAVE          = "<:circle_red:855605697978957854>"
-	EMOJI_HALTED         = "<:halted:398133588010336259>"
-	EMOJI_BUILD          = "<:build:933512140395012107>"
-	EMOJI_PVP            = "<:bk:812130062379515906>"
-	EMOJI_MAP            = "🗺️"
-	EMOJI_CONNECT        = "📡"
-	EMOJI_ULX            = "⌨️"
-	EMOJI_ROUND_MODIFIER = "🔵"
+	EMOJI_JOIN    = "<:green_cross_cir:654105378933571594>"
+	EMOJI_LEAVE   = "<:circle_red:855605697978957854>"
+	EMOJI_HALTED  = "<:halted:398133588010336259>"
+	EMOJI_BUILD   = "<:build:933512140395012107>"
+	EMOJI_PVP     = "<:bk:812130062379515906>"
+	EMOJI_PLAY    = "<:playbuttonsmaller:1017716044485382154>"
+	EMOJI_MAP     = "🗺️"
+	EMOJI_CONNECT = "📡"
+	EMOJI_ULX     = "⌨️"
+	EMOJI_VOICE   = "🗣️"
+  EMOJI_ROUND_MODIFIER = "🔵"
 
 	COLOR_RED    = 0xE7373E
 	COLOR_GREEN  = 0x37E73E
@@ -90,7 +107,7 @@ func sendMessage(discord *discordgo.Session, message EventStruct) {
 	}
 }
 
-func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, color int, emoji string) {
+func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, color int, emoji string) *discordgo.Message {
 	params := &discordgo.WebhookParams{
 		AllowedMentions: &discordgo.MessageAllowedMentions{
 			Parse: []discordgo.AllowedMentionType{},
@@ -105,11 +122,13 @@ func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, 
 		},
 	}
 
-	_, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
+	message, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
 
 	if err != nil {
 		log.Println(err)
 	}
+
+	return message
 }
 
 func sendConnectMessage(discord *discordgo.Session, event EventStruct) {
@@ -175,10 +194,88 @@ func sendPvpStatusChange(discord *discordgo.Session, event EventStruct) {
 	sendEvent(discord, event, event.Data.Content, color, emoji)
 }
 
-func queueGroomer() {
-	discord, err := discordgo.New("")
+func sendVoiceText(discord *discordgo.Session, data *voice.Session) string {
+	transcript := data.Message
+	steamName := data.SteamName
+	avatar := data.Avatar
+	// fileName := data.FileName
+	messageId := data.MessageId
+	// isFinal := data.Finished
 
-	log.Println(WebhookId, WebhookSecret)
+	// var voiceLink string
+	// if len(fileName) > 0 {
+	// 	voiceLink = fmt.Sprintf("https://larynx.cfcservers.org/%v.ogg", fileName)
+	// }
+
+	// var description string
+
+	// if isFinal && len(voiceLink) > 0 {
+	// 	description = fmt.Sprintf("%v [%v](%v) %v", EMOJI_VOICE, EMOJI_PLAY, voiceLink, transcript)
+	// } else {
+	// 	description = fmt.Sprintf("%v %v", EMOJI_VOICE, transcript)
+	// }
+
+	description := fmt.Sprintf("%v %v", EMOJI_VOICE, transcript)
+
+	embeds := []*discordgo.MessageEmbed{
+		{
+			Description: description,
+			Color:       COLOR_BLUE,
+		},
+	}
+
+	if len(messageId) == 0 {
+		log.Println("Creating new message for voice")
+		params := &discordgo.WebhookParams{
+			AllowedMentions: &discordgo.MessageAllowedMentions{
+				Parse: []discordgo.AllowedMentionType{},
+			},
+			Username:  steamName,
+			AvatarURL: avatar,
+			Embeds:    embeds,
+		}
+
+		message, err := discord.WebhookExecute(VoiceWebhookId, VoiceWebhookSecret, true, params)
+
+		if err != nil {
+			log.Println("Error sending webhook message create")
+			log.Println(err)
+			return ""
+		}
+
+		return message.ID
+	} else {
+		log.Println("Updating existing message for voice")
+		params := &discordgo.WebhookEdit{
+			Embeds: embeds,
+		}
+
+		log.Println(messageId)
+		log.Println(params.Embeds[0].Description)
+
+		message, err := discord.WebhookMessageEdit(VoiceWebhookId, VoiceWebhookSecret, messageId, params)
+		if err != nil {
+			log.Println("Error sending webhook message edit")
+			log.Println(err)
+		}
+
+		return message.ID
+	}
+}
+
+func processVoiceText(queueVoiceText func(string, string, string, string), event EventStruct) {
+	steamId := event.Data.SteamId
+	steamName := event.Data.SteamName
+	avatar := event.Data.Avatar
+	data := event.Data.Content
+	log.Println(data)
+
+	queueVoiceText(steamId, steamName, avatar, data)
+}
+
+func queueGroomer() {
+	discord, err := discordgo.New(DiscordToken)
+	voiceManager := voice.NewManager(discord, sendVoiceText)
 
 	if err != nil {
 		log.Fatal("error connecting:", err)
@@ -218,6 +315,9 @@ func queueGroomer() {
 			sendPvpStatusChange(discord, message)
 		case "round_modifier_enabled":
 			sendRoundModifierEnabled(discord, message)
+		case "voice_transcript":
+			processVoiceText(voiceManager.ReceiveVoiceTranscript, message)
 		}
+
 	}
 }

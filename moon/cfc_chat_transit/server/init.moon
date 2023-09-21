@@ -16,8 +16,8 @@ loadHook = "ChatTransit_WebsocketLoad"
 hook.Add "Think", loadHook, ->
     hook.Remove "Think", loadHook
 
-    ChatTransit.WebSocket = GWSockets.createWebSocket "ws://#{relayHost\GetString!}/relay"
-    ChatTransit.Realm = CreateConVar "cfc_realm", "", FCVAR_NONE, "CFC Realm Name"
+    ChatTransit.WebSocket = GWSockets.createWebSocket "wss://#{relayHost\GetString!}/relay", false
+    ChatTransit.Realm = CreateConVar "cfc_realm", "unknown", FCVAR_REPLICATED + FCVAR_ARCHIVE, "The Realm Name"
 
     with ChatTransit.WebSocket
         .reconnectTimerName = "CFC_ChatTransit_WebsocketReconnect"
@@ -41,7 +41,7 @@ hook.Add "Think", loadHook, ->
     return nil
 
 ChatTransit.Send = (data) =>
-    logger\info "Sending '#{data.Type}'"
+    logger\debug "Sending '#{data.Type}'"
     steamID64 = data.Data.SteamId
 
     data.Data.Avatar or= ChatTransit.AvatarService\getAvatar steamID64
