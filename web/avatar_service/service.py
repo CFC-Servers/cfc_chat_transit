@@ -13,9 +13,10 @@ base_url = os.getenv("AVATAR_SERVICE_URL")
 @app.route("/outline", methods=["POST"])
 def outline() -> str:
     content = request.json
+    realm = content["realm"]
     steam_id = content["steamID"]
 
-    avatar_path = f"/avatars/{steam_id}.png"
+    avatar_path = f"/avatars/{realm}/{steam_id}.png"
 
     if os.path.isfile(avatar_path):
         os.remove(avatar_path)
