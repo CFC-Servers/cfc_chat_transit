@@ -1,6 +1,3 @@
-export Msg
-export _Msg = Msg
-
 import guard from ChatTransit
 import isstring from _G
 import Replace from string
@@ -15,22 +12,27 @@ ChatTransit.ReceiveULXAction = (msg) =>
             Type: "ulx_action"
             Content: msg
 
-M = (...) ->
-    _Msg ...
-    ChatTransit\ReceiveULXAction ...
-
 hook.Add "InitPostEntity", "ChatTransit_WrapUlxLog", guard ->
     return unless ulx
+
+    ulx._ChatTransit_logString or= ulx.logString
+
+    logString = (msg, logToMain) ->
+        ulx.logString = ulx._ChatTransit_logString
+
+        ProtectedCall -> ChatTransit\ReceiveULXAction msg
+        return ulx._ChatTransit_logString msg, logToMain
 
     ulx._ChatTransit_fancyLogAdmin or= ulx.fancyLogAdmin
     ulx.fancyLogAdmin = (...) ->
         args = { ... }
 
-        -- If second param is a string, then it's safe to send to everyone
-        return ulx._ChatTransit_fancyLogAdmin(...) unless isstring args[2]
+        -- If second param is not a string, it's a "hide_echo" - if it's not false, we shouldn't relay it
+        if (not isstring(args[2])) and (args[2] ~= false)
+            return ulx._ChatTransit_fancyLogAdmin(...)
 
-        Msg = M
+        ulx.logString = logString
 
         ulx._ChatTransit_fancyLogAdmin ...
 
-        Msg = _Msg
+        ulx.logString = ulx._ChatTransit_logString
