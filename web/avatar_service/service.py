@@ -13,7 +13,7 @@ base_url = os.getenv("AVATAR_SERVICE_URL")
 @app.route("/outline", methods=["POST"])
 def outline() -> str:
     content = request.json
-    realm = content["realm"]
+    realm = content.get("realm", "cfc3")
     steam_id = content["steamID"]
 
     avatar_path = f"/avatars/{realm}/{steam_id}.png"
