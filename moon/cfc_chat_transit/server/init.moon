@@ -83,6 +83,11 @@ ChatTransit.guard = (f, delay) -> (...) ->
 
     return nil
 
+hook.Add "ShutDown", "CFC_ChatTransit_WebsocketDisconnect", ->
+    logger\info "Gracefully closing websocket.."
+    ProtectedCall -> ChatTransit.WebSocket\closeNow!
+    return nil
+
 logger\info "Loading modules..."
 for f in *file.Find "cfc_chat_transit/server/modules/*.lua", "LUA"
     logger\info "Loading modules/#{f}"
