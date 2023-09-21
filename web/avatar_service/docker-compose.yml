@@ -14,7 +14,7 @@ services:
       context: .
       dockerfile: Dockerfile
     command: flask run --host 0.0.0.0 --port 8080
-    container_name: "${REALM}_chat_transit_avatar_service"
+    container_name: chat_transit_avatar_service
     ports:
       - "127.0.0.1:$PORT:8080"
     environment:

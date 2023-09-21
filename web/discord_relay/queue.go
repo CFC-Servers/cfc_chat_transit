@@ -10,6 +10,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/cfc-servers/cfc_chat_transit/voice"
+	"github.com/cfc-servers/cfc_chat_transit/webhook"
 )
 
 var discord *discordgo.Session
@@ -42,9 +43,6 @@ type VoiceMessageOperation struct {
 
 var MessageQueue = make(chan []byte, 10000)
 
-var WebhookId string = os.Getenv("WEBHOOK_ID")
-var WebhookSecret string = os.Getenv("WEBHOOK_SECRET")
-
 var VoiceWebhookId string = os.Getenv("VOICE_WEBHOOK_ID")
 var VoiceWebhookSecret string = os.Getenv("VOICE_WEBHOOK_SECRET")
 
@@ -53,16 +51,16 @@ var DiscordToken string = os.Getenv("DISCORD_TOKEN")
 const urlRegexString = `https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)`
 
 const (
-	EMOJI_JOIN    = "<:green_cross_cir:654105378933571594>"
-	EMOJI_LEAVE   = "<:circle_red:855605697978957854>"
-	EMOJI_HALTED  = "<:halted:398133588010336259>"
-	EMOJI_BUILD   = "<:build:933512140395012107>"
-	EMOJI_PVP     = "<:bk:812130062379515906>"
-	EMOJI_PLAY    = "<:playbuttonsmaller:1017716044485382154>"
-	EMOJI_MAP     = "🗺️"
-	EMOJI_CONNECT = "📡"
-	EMOJI_ULX     = "⌨️"
-	EMOJI_VOICE   = "🗣️"
+	EMOJI_JOIN           = "<:green_cross_cir:654105378933571594>"
+	EMOJI_LEAVE          = "<:circle_red:855605697978957854>"
+	EMOJI_HALTED         = "<:halted:398133588010336259>"
+	EMOJI_BUILD          = "<:build:933512140395012107>"
+	EMOJI_PVP            = "<:bk:812130062379515906>"
+	EMOJI_PLAY           = "<:playbuttonsmaller:1017716044485382154>"
+	EMOJI_MAP            = "🗺️"
+	EMOJI_CONNECT        = "📡"
+	EMOJI_ULX            = "⌨️"
+	EMOJI_VOICE          = "🗣️"
 	EMOJI_ROUND_MODIFIER = "🔵"
 
 	COLOR_RED    = 0xE7373E
@@ -101,7 +99,10 @@ func sendMessage(discord *discordgo.Session, message EventStruct) {
 		AvatarURL: message.Data.Avatar,
 	}
 
-	_, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
+	realm := message.Realm
+	webhookInfo := webhook.Get(realm)
+
+	_, err := discord.WebhookExecute(webhookInfo.ID, webhookInfo.Secret, true, params)
 	if err != nil {
 		log.Println("WebhookExecute errored: ", err)
 	}
@@ -122,7 +123,10 @@ func sendEvent(discord *discordgo.Session, event EventStruct, eventText string, 
 		},
 	}
 
-	message, err := discord.WebhookExecute(WebhookId, WebhookSecret, true, params)
+	realm := event.Realm
+	webhookInfo := webhook.Get(realm)
+
+	message, err := discord.WebhookExecute(webhookInfo.ID, webhookInfo.Secret, true, params)
 
 	if err != nil {
 		log.Println(err)

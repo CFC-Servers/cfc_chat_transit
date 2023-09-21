@@ -1,18 +1,21 @@
 import TableToJSON from util
-HTTP = HTTP
 
-avatarServiceAddress = CreateConVar "cfc_avatar_service_address", "", FCVAR_ARCHIVE + FCVAR_PROTECTED
+avatarServiceAPIAddress = CreateConVar "cfc_avatar_service_address", "", FCVAR_ARCHIVE + FCVAR_PROTECTED
+avatarServiceImageAddress = CreateConVar "cfc_avatar_service_image_address", "", FCVAR_ARCHIVE + FCVAR_PROTECTED
 
 class AvatarService
-
     new: (logger) =>
         @logger = logger\scope "AvatarService"
-        @outlinerUrl = "#{avatarServiceAddress\GetString!}/outline"
-        @processedIds = {}
+        @outlinerUrl = "#{avatarServiceAPIAddress\GetString!}/outline"
+        @processedIDs = {}
 
     getAvatar: (steamID64) =>
-        url = steamID64 and "https://avatarservice.cfcservers.org/avatars/#{steamID64}.png" or nil
-        url and= "#{url}?processed=true" if @processedIds[steamID64]
+        imageAddress = avatarServiceImageAddress\GetString!
+        realm = ChatTransit.Realm\GetString!
+        baseURL = "https://#{imageAddress}/avatars/#{realm}"
+
+        url = steamID64 and "#{baseURL}/#{steamID64}.png" or nil
+        url and= "#{url}?processed=true" if @processedIDs[steamID64]
 
         return url
 
@@ -23,7 +26,7 @@ class AvatarService
         failed = @logger\error
         success = (code, body) ->
             @logger\debug "Avatar request succeeded with code: #{code} | Body: #{body}"
-            @processedIds[steamID64] = true
+            @processedIDs[steamID64] = true
 
         HTTP
             :success
@@ -48,7 +51,16 @@ hook.Add "CFC_SteamLookup_SuccessfulPlayerData", "CFC_ChatTransit_AvatarService"
     return unless dataName == "PlayerSummary"
     return unless data
 
-    success, err = pcall -> ChatTransit.AvatarService\outlineAvatar ply, data
-    ErrorNoHaltWithStack err, dataName, ply unless success
+    ProtectedCall -> ChatTransit.AvatarService\outlineAvatar ply, data
+
+    return nil
+
+hook.Add "PlayerDisconnected", "CFC_ChatTransit_AvatarServiceReset", (ply) ->
+    steamID64 = ply\SteamID64!
+    if not steamID64
+        ErrorNoHalt "[ChatTransit] Failed to get player's SteamID64 in PlayerDisconnected"
+        return
+
+    AvatarService.processedIDs[steamID64] = nil
 
     return nil
