@@ -10,17 +10,20 @@ import (
 
 var upgrader = websocket.Upgrader{}
 
-func keepAlive(c *websocket.Conn) {
-	go func() {
-		for {
-			err := c.WriteMessage(websocket.PingMessage, []byte("keepalive"))
-			if err != nil {
-				return
-			}
+func keepAlive(c *websocket.Conn, r *http.Request) {
+	ctx := r.Context()
 
-			time.Sleep(2)
+	select {
+	case <-time.After(2 * time.Second):
+		err := c.WriteMessage(websocket.PingMessage, []byte("keepalive"))
+		if err != nil {
+			log.Print("Received an error when sending keepalive. Exiting keepalive loop")
+			return
 		}
-	}()
+	case <-ctx.Done():
+		log.Print("Request context is done. Existing keepalive loop")
+		return
+	}
 }
 
 func relay(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +35,7 @@ func relay(w http.ResponseWriter, r *http.Request) {
 
 	defer c.Close()
 
-	keepAlive(c)
+	go keepAlive(c, r)
 
 	for {
 		_, message, err := c.ReadMessage()
