@@ -15,7 +15,9 @@ class AvatarService
         baseURL = "https://#{imageAddress}/avatars/#{realm}"
 
         url = steamID64 and "#{baseURL}/#{steamID64}.png" or nil
-        url and= "#{url}?processed=true" if @processedIDs[steamID64]
+
+        processed = @processedIDs[steamID64]
+        url = url and processed and "#{url}?hash=#{processed}"
 
         return url
 
@@ -27,7 +29,7 @@ class AvatarService
         failed = @logger\error
         success = (code, body) ->
             @logger\debug "Avatar request succeeded with code: #{code} | Body: #{body}"
-            @processedIDs[steamID64] = true
+            @processedIDs[steamID64] = util.CRC( tostring( outlineColor ) )
 
         HTTP
             :success
