@@ -26,3 +26,7 @@ Paving paths and establishing tunnels
 ### Client
 - **`cfc_chat_transit_remote_messages`**
   - Whether or not Discord messages should appear in Chat
+
+### Hooks
+- **`CFC_ChatTransit_GetPlayerColor`**
+  - Takes a Player. Return a Color to override the color that outlines their avatar in Discord
