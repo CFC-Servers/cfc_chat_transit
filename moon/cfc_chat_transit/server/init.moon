@@ -60,6 +60,10 @@ ChatTransit.Send = (data) =>
     @WebSocket\write TableToJSON data
 
 ChatTransit.GetRankColor = (ply) =>
+    override = hook.Run "CFC_ChatTransit_GetPlayerColor", ply
+    if override
+        return "#{override.r} #{override.g} #{override.b} 255"
+
     user = ULib.ucl.users[ply\SteamID!]
     groupName = user and user.group or "user"
 
