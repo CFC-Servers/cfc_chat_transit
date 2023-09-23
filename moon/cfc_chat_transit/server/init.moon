@@ -64,9 +64,9 @@ ChatTransit.GetRankColor = (ply) =>
     groupName = user and user.group or "user"
 
     team = ULib.ucl.groups[groupName].team
-    teamColor = "#{team.color_red} #{team.color_green} #{team.color_blue} 255"
 
-    return teamColor
+    return "#{team.color_red} #{team.color_green} #{team.color_blue} 255" if team
+    return "255 255 0 255"
 
 ChatTransit.guard = (f, delay) -> (...) ->
     args = {...}
