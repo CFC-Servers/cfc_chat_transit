@@ -83,7 +83,7 @@ func steamLinkMessage(event EventStruct, message string) string {
 		return message
 	}
 
-	steamLink := "https://steamid.io/lookup/" + steamId
+	steamLink := "https://steamid.gay/user/" + steamId
 	return "[" + message + "](" + steamLink + ")"
 }
 
