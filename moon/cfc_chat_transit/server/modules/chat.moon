@@ -4,7 +4,7 @@ ChatTransit.ReceiveMessage = (data) =>
     :userid, :text, :teamonly = data
     ply = Player userid
 
-    return if teamonly
+    return if teamonly == 1
     return unless text
     return if text == ""
 
