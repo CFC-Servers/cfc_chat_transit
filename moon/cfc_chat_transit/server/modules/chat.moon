@@ -1,12 +1,15 @@
 import guard from ChatTransit
 
-ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
-    shouldRelay = hook.Run "CFC_ChatTransit_ShouldRelayChatMessage", ply, text, teamChat
-    return if shouldRelay == false
-    
-    return if teamChat
+ChatTransit.ReceiveMessage = (data) =>
+    :userid, :text, :teamonly = data
+    ply = Player userid
+
+    return if teamonly == 1
     return unless text
     return if text == ""
+
+    shouldRelay = hook.Run "CFC_ChatTransit_ShouldRelayChatMessage", ply, text, teamonly
+    return if shouldRelay == false
 
     @Send
         Type: "message"
@@ -17,4 +20,5 @@ ChatTransit.ReceiveMessage = (ply, text, teamChat) =>
             SteamId: ply\SteamID64!
             IrisId: "none"
 
-hook.Add "PlayerSay", "CFC_ChatTransit_MessageListener", guard(ChatTransit\ReceiveMessage), HOOK_MONITOR_LOW
+gameevent.Listen "player_say"
+hook.Add "player_say", "CFC_ChatTransit_MessageListener", guard(ChatTransit\ReceiveMessage)
