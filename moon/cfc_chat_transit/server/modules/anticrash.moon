@@ -10,6 +10,5 @@ ChatTransit.AnticrashEvent = (eventText) =>
             Content: eventText
             SteamName: "CFC Anticrash"
 
-hook.Add "z_anticrash_LagDetect", "CFC_ChatTransit_AnticrashEventListener", guard ChatTransit\AnticrashEvent
 hook.Add "z_anticrash_LagStuck", "CFC_ChatTransit_AnticrashEventListener", guard ChatTransit\AnticrashEvent
 hook.Add "z_anticrash_CrashPrevented", "CFC_ChatTransit_AnticrashEventListener", guard ChatTransit\AnticrashEvent
