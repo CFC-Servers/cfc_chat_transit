@@ -28,7 +28,7 @@ jobs:
         run: moonc -t lua moon/*
 
       - name: Remove extra dirs
-        run: rm -rf moon web .github
+        run: rm -rf moon .github
 
       - name: Create VERSION file
         run: versionStr=${{ github.ref }};echo -e v${versionStr#*v} > VERSION

@@ -24,14 +24,8 @@ net.Receive "CFC_ChatTransit_RemoteMessagePreference", (_, ply) ->
     recipients\RemovePlayer ply
     adminRecipients\RemovePlayer ply
 
-broadcastMessage = (ply, cmd, args, argStr) ->
+ChatTransit.BroadcastMessage = (author, authorColor, message) ->
     return unless shouldTransmit\GetBool!
-
-    return if IsValid ply
-
-    author = rawget args, 1
-    authorColor = rawget args, 2
-    message = rawget args, 3
 
     return unless author
     return unless authorColor
@@ -45,5 +39,3 @@ broadcastMessage = (ply, cmd, args, argStr) ->
     net.WriteColor authorColor
     net.WriteString message
     net.Send sendingTo
-
-concommand.Add "chat_transit", broadcastMessage

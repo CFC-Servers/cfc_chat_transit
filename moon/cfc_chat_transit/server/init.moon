@@ -11,23 +11,37 @@ import TableToJSON from util
 
 logger = ChatTransit.Logger
 relayHost = CreateConVar "cfc_relay_host", "", FCVAR_NONE
+secret = CreateConVar "cfc_relay_secret", "", FCVAR_NONE
 
 loadHook = "ChatTransit_WebsocketLoad"
 hook.Add "Think", loadHook, ->
     hook.Remove "Think", loadHook
 
-    ChatTransit.WebSocket = GWSockets.createWebSocket "wss://#{relayHost\GetString!}/relay", false
     ChatTransit.Realm = CreateConVar "cfc_realm", "unknown", FCVAR_REPLICATED + FCVAR_ARCHIVE, "The Realm Name"
+
+    address = "wss://#{relayHost\GetString!}/relay/#{ChatTransit.Realm}/#{secret\GetString!}"
+    ChatTransit.WebSocket = GWSockets.createWebSocket address, false
 
     with ChatTransit.WebSocket
         .reconnectTimerName = "CFC_ChatTransit_WebsocketReconnect"
 
         .onMessage = (msg) =>
-            if msg ~= "keepalive"
-                logger\info "Received a not-keepalive message from the server:", msg
+            if msg == "keepalive"
+                \write "keepalive"
                 return
 
-            \write "keepalive"
+            data = util.JSONToTable msg
+            messageType = data["message_type"]
+
+            if messageType == "chat"
+                author = data["sender_name"]
+                authorColor = data["color_rgb"]
+                content = data["content"]
+
+                print "Broadcasting message", author, authorColor, content
+                ChatTransit.BroadcastMessage author, authorColor, content
+
+            logger\info "Received unknown message type: msg"
 
         .onConnected = =>
             logger\info "Established websocket connection"
