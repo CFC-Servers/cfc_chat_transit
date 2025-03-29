@@ -19,7 +19,7 @@ hook.Add "Think", loadHook, ->
 
     ChatTransit.Realm = CreateConVar "cfc_realm", "unknown", FCVAR_REPLICATED + FCVAR_ARCHIVE, "The Realm Name"
 
-    address = "wss://#{relayHost\GetString!}/relay/#{ChatTransit.Realm}/#{secret\GetString!}"
+    address = "wss://#{relayHost\GetString!}/relay/#{ChatTransit.Realm\GetString!}/#{secret\GetString!}"
     ChatTransit.WebSocket = GWSockets.createWebSocket address, false
 
     with ChatTransit.WebSocket
