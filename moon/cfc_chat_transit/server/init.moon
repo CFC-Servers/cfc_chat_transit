@@ -4,6 +4,7 @@ require "logger"
 export ChatTransit = { Logger: Logger "ChatTransit" }
 include "cfc_chat_transit/server/avatar_service.lua"
 include "cfc_chat_transit/server/player_count.lua"
+ChatTransit.AvatarService = AvatarService ChatTransit.Logger
 
 import Read from file
 import GetColor from team
@@ -75,12 +76,12 @@ ChatTransit.Send = (data) =>
 
     @WebSocket\write TableToJSON data
 
-ChatTransit.GetRankColor = (ply) =>
-    override = hook.Run "CFC_ChatTransit_GetPlayerColor", ply
+ChatTransit.GetRankColor = (steamID, steamID64) =>
+    override = hook.Run "CFC_ChatTransit_GetPlayerColor", steamID, steamID64
     if override
         return "#{override.r} #{override.g} #{override.b} 255"
 
-    user = ULib.ucl.users[ply\SteamID!]
+    user = ULib.ucl.users[steamID]
     groupName = user and user.group or "user"
 
     team = ULib.ucl.groups[groupName].team

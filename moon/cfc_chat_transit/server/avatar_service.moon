@@ -3,21 +3,22 @@ import TableToJSON from util
 avatarServiceAPIAddress = CreateConVar "cfc_avatar_service_address", "", FCVAR_ARCHIVE + FCVAR_PROTECTED
 avatarServiceImageAddress = CreateConVar "cfc_avatar_service_image_address", "", FCVAR_ARCHIVE + FCVAR_PROTECTED
 
-class AvatarService
+export class AvatarService
     new: (logger) =>
         @logger = logger\scope "AvatarService"
         @outlinerUrl = "#{avatarServiceAPIAddress\GetString!}/outline"
         @processedIDs = {}
 
     getAvatar: (steamID64) =>
+        return unless steamID64
         imageAddress = avatarServiceImageAddress\GetString!
         realm = ChatTransit.Realm\GetString!
         baseURL = "https://#{imageAddress}/avatars/#{realm}"
 
-        url = steamID64 and "#{baseURL}/#{steamID64}.png" or nil
+        url = "#{baseURL}/#{steamID64}.png"
 
         processed = @processedIDs[steamID64]
-        url = url and processed and "#{url}?hash=#{processed}"
+        url = "#{url}?hash=#{processed}" if processed
 
         return url
 
@@ -39,22 +40,30 @@ class AvatarService
             method: "POST"
             type: "application/json"
 
-    outlineAvatar: (ply, data) =>
-        @logger\debug "Received request to outline avatar for ply: #{ply\Nick!}"
-        avatar = data.response.players[1].avatarfull
-        outlineColor = ChatTransit\GetRankColor ply
-        steamID64 = ply\SteamID64!
+    outlineAvatar: (steamID, steamID64, url) =>
+        @logger\debug "Received request to outline avatar for ply: #{steamID}"
+        outlineColor = ChatTransit\GetRankColor steamID, steamID64
 
-        @processAvatar avatar, outlineColor, steamID64
+        @processAvatar url, outlineColor, steamID64
 
-hook.Add "InitPostEntity", "CFC_ChatTrahsit_AvatarServiceInit", ->
-    ChatTransit.AvatarService = AvatarService ChatTransit.Logger
+gameevent.Listen "player_connect"
+hook.Add "player_connect", "CFC_ChatTransit_AvatarSetup", (data) ->
+    return if data.bot == 1
 
-hook.Add "CFC_SteamLookup_SuccessfulPlayerData", "CFC_ChatTransit_AvatarService", (dataName, ply, data) ->
-    return unless dataName == "PlayerSummary"
-    return unless data
+    steamID = data.networkid
+    steamID64 = util.SteamIDTo64 steamID
 
-    ProtectedCall -> ChatTransit.AvatarService\outlineAvatar ply, data
+    success = (body) ->
+        data = util.JSONToTable body
+        assert data, "Failed to parse JSON from steamid.gay"
+
+        print "Got avatar data for #{steamID64}: ", data.Avatar
+        ChatTransit.AvatarService\outlineAvatar steamID, steamID64, data.Avatar
+
+    failed = (message) ->
+        error "Failed to get Avatar for #{steamID64}: #{message}"
+
+    http.Fetch "https://steamid.gay/api/user/#{steamID64}", success, failed
 
     return nil
 
