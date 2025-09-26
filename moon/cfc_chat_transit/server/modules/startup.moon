@@ -16,5 +16,5 @@ ChatTransit.MapStartup = (data) =>
         Data:
             Content: eventText
 
-hook.Add "InitPostEntity", "CFC_ChatTransit_StartListener", -> timer.Simple 1, guard ChatTransit\MapStartup
+hook.Add "InitPostEntity", "CFC_ChatTransit_StartListener", -> timer.Simple( 1, guard ChatTransit\MapStartup )
 
