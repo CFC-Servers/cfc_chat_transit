@@ -22,7 +22,7 @@ net.Receive "CFC_ChatTransit_RemoteMessageReceive", ->
         colors.white, ": #{message}"
     }
 
-    hook.Run "CFC_ChatTransit_RemoteMessageReceive", addTextParams
+    hook.Run "CFC_ChatTransit_RemoteMessageReceive", { :author, :authorColor, :message }
 
     chat.AddText unpack addTextParams
 
